@@ -6,7 +6,7 @@
 
 本项目面向校内学生，提供闲置商品发布、下单、校内面交和模拟担保结算功能，帮助买卖双方记录交易过程，并通过明确的订单状态和简单纠纷处理协调交付与结算。本学期持续使用本仓库，先实现模块化单体，再按课程要求逐步增加认证、消息、服务拆分、监控和部署能力。
 
-**当前阶段：第二周选题与功能规划。以下功能均为设计目标，尚未实现业务代码。**
+**当前阶段：第三周工程初始化。已实现基础启动与验证接口；以下交易业务仍为设计目标，尚未实现。**
 ## 业务背景与目标用户
 
 学生在毕业、搬宿舍或更换学习用品时，经常需要转让教材、数码配件及生活用品。通过群聊交流时，商品是否已经售出、双方是否约定交付、交易是否结束等信息容易分散，出现争议时也缺少统一记录。本项目以单一校园内的二手交易为场景，用商品状态、订单记录和模拟担保结算串联交易，探索如何让交易过程可查询、可追踪、可恢复。
@@ -128,3 +128,54 @@ flowchart TD
 5. 申请纠纷后阻止普通放款；裁决只执行一次，并记录理由。
 6. 用户无法查看或修改其他无关用户的订单及纠纷材料。
 7. 消息处理失败后可以重试，重复消息不会造成重复业务变更。
+
+
+## 第三周：运行与测试说明
+
+当前已实现 Spring Boot 启动、基础 YAML 配置、问候 GET 接口、Actuator 健康检查和应用上下文启动测试。上文交易功能为学期规划；尚未实现注册登录、商品和订单 CRUD、担保结算、Service、Repository 或数据库。
+
+### 环境与目录
+
+- Java：JDK 25；本机验证版本为 Temurin 25.0.4.1。
+- Spring Boot：4.0.8；Group 与包名：com.zjgsu.cyy。
+- Maven：使用工程自带 Maven Wrapper，配置下载 Maven 3.9.16，无需单独全局安装 Maven。
+- 完整工程位于 monolith/；pom.xml 与 src/ 同属此 Maven 工程。
+- 配置文件：monolith/src/main/resources/application.yml；默认端口 8080。
+
+### 通用命令
+
+先确保 JAVA_HOME 指向 JDK 25。以下命令从仓库根目录开始，Linux／WSL 使用对应平台的 JDK：
+
+```bash
+cd monolith
+./mvnw test
+./mvnw spring-boot:run
+```
+
+若 Linux 解压后提示无执行权限，先执行 `chmod +x mvnw`。Windows CMD 使用 `mvnw.cmd test` 和 `mvnw.cmd spring-boot:run`；PowerShell／Git Bash 使用 `./mvnw.cmd test` 和 `./mvnw.cmd spring-boot:run`。
+
+### 本机 Windows Git Bash：D 盘缓存
+
+在 VS Code 的 Git Bash 中，从仓库根目录执行以下配置。路径为本机示例，其他电脑应替换为实际 JDK 与缓存位置；每个新终端需重新设置。
+
+```bash
+mkdir -p /d/codexwork/maven-cache/repository /d/codexwork/maven-cache/tmp
+export JAVA_HOME='D:/codexwork/Applications/Java/jdk-25.0.4.1+1'
+export MAVEN_USER_HOME='D:/codexwork/maven-cache'
+export MAVEN_OPTS='-Dmaven.repo.local=D:/codexwork/maven-cache/repository -Djava.io.tmpdir=D:/codexwork/maven-cache/tmp'
+export TEMP='D:/codexwork/maven-cache/tmp'
+export TMP='D:/codexwork/maven-cache/tmp'
+cd monolith
+./mvnw.cmd test
+./mvnw.cmd spring-boot:run
+```
+
+Maven Wrapper 下载与依赖缓存放在 D 盘，编译输出在 monolith/target/，不提交 target。运行时保持终端打开，停止使用 Ctrl+C。如果端口被旧程序占用，先停止旧实例，不要同时启动两个应用。
+
+### 验证地址
+
+- http://localhost:8080/api/hello ：返回“你好，校园二手交易与担保履约平台！”。
+- http://localhost:8080/actuator/health ：返回 JSON，status 应为 UP，可能附带其他健康信息字段。
+- contextLoads 测试结果以 Tests run、Failures、Errors 和 BUILD SUCCESS 为判断依据。
+
+详细记录见[第三周作业](docs/homework/week-03/index.md)，选题衔接见[项目规划](docs/project-proposal.md)。

@@ -1,0 +1,65 @@
+[INFO] Scanning for projects...
+[INFO]
+[INFO] ------------------------< com.zjgsu.cyy:course >------------------------
+[INFO] Building Campus Trade 0.0.1-SNAPSHOT
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO]
+[INFO] --- resources:3.3.1:resources (default-resources) @ course ---
+[INFO] Copying 1 resource from src\main\resources to target\classes
+[INFO] Copying 0 resource from src\main\resources to target\classes
+[INFO]
+[INFO] --- compiler:3.14.1:compile (default-compile) @ course ---
+[INFO] Recompiling the module because of changed source code.
+[INFO] Compiling 2 source files with javac [debug parameters release 25] to target\classes
+[INFO]
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ course ---
+[INFO] skip non existing resourceDirectory E:\weifuwu\homework\microservices-practice-2412190609\monolith\src\test\resources
+[INFO]
+[INFO] --- compiler:3.14.1:testCompile (default-testCompile) @ course ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 1 source file with javac [debug parameters release 25] to target\test-classes
+[INFO]
+[INFO] --- surefire:3.5.6:test (default-test) @ course ---
+[INFO] Using auto detected provider org.apache.maven.surefire.junitplatform.JUnitPlatformProvider
+[INFO]
+[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+[INFO] Running com.zjgsu.cyy.CourseApplicationTests
+20:26:34.556 [main] INFO org.springframework.test.context.support.AnnotationConfigContextLoaderUtils -- Could not detect default configuration classes for test class [com.zjgsu.cyy.CourseApplicationTests]: CourseApplicationTests does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+20:26:34.746 [main] INFO org.springframework.boot.test.context.SpringBootTestContextBootstrapper -- Found @SpringBootConfiguration com.zjgsu.cyy.CourseApplication for test class com.zjgsu.cyy.CourseApplicationTests
+20:26:34.841 [main] INFO org.springframework.test.context.support.AnnotationConfigContextLoaderUtils -- Could not detect default configuration classes for test class [com.zjgsu.cyy.CourseApplicationTests]: CourseApplicationTests does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+20:26:34.843 [main] INFO org.springframework.boot.test.context.SpringBootTestContextBootstrapper -- Found @SpringBootConfiguration com.zjgsu.cyy.CourseApplication for test class com.zjgsu.cyy.CourseApplicationTests
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v4.0.8)
+
+2026-10-09T20:26:35.209+08:00  INFO 24732 --- [campus-trade] [           main] com.zjgsu.cyy.CourseApplicationTests     : Starting CourseApplicationTests using Java 25.0.4.1 with PID 24732 (started by ���� in E:\weifuwu\homework\microservices-practice-2412190609\monolith)
+2026-10-09T20:26:35.211+08:00  INFO 24732 --- [campus-trade] [           main] com.zjgsu.cyy.CourseApplicationTests     : No active profile set, falling back to 1 default profile: "default"
+2026-10-09T20:26:36.682+08:00  INFO 24732 --- [campus-trade] [           main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 1 endpoint beneath base path '/actuator'
+2026-10-09T20:26:36.747+08:00  INFO 24732 --- [campus-trade] [           main] com.zjgsu.cyy.CourseApplicationTests     : Started CourseApplicationTests in 1.845 seconds (process running for 3.946)
+Mockito is currently self-attaching to enable the inline-mock-maker. This will no longer work in future releases of the JDK. Please add Mockito as an agent to your build as described in Mockito's documentation: https://javadoc.io/doc/org.mockito/mockito-core/latest/org.mockito/org/mockito/Mockito.html#0.3
+OpenJDK 64-Bit Server VM warning: Sharing is only supported for boot loader classes because bootstrap classpath has been appended
+WARNING: A Java agent has been loaded dynamically (D:\codexwork\maven-cache\repository\net\bytebuddy\byte-buddy-agent\1.17.8\byte-buddy-agent-1.17.8.jar)
+WARNING: If a serviceability tool is in use, please run with -XX:+EnableDynamicAgentLoading to hide this warning
+WARNING: If a serviceability tool is not in use, please run with -Djdk.instrument.traceUsage for more information
+WARNING: Dynamic loading of agents will be disallowed by default in a future release
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 3.266 s -- in com.zjgsu.cyy.CourseApplicationTests
+[INFO]
+[INFO] Results:
+[INFO]
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0
+[INFO]
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  28.243 s
+[INFO] Finished at: 2026-10-09T20:26:37+08:00
+[INFO] ------------------------------------------------------------------------
