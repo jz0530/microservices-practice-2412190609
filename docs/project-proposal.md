@@ -20,3 +20,11 @@
 ## 第 03 周实现范围
 
 创建 Java 25、Spring Boot 4.0.8、Maven 工程，Group 与源码／测试包名均为 com.zjgsu.cyy。配置 application.yml、8080 端口、Spring Web MVC 和 Actuator，实现 GET /api/hello 并验证 /actuator/health，使用 @SpringBootTest 的 contextLoads 测试验证应用上下文加载。注册登录、商品与订单 CRUD、Service、Repository、数据库和实际交易能力均不在本周实现范围。
+
+## 第 04 周实现范围
+
+核心流程为发布闲置商品、查询商品、买家下单、订单保存并占用商品。Product 与 TradeOrder 为两个实体，订单通过 product_id 外键关联商品；本周没有取消和重新销售，每件商品至多生成一笔订单。
+
+Service 检查商品名称及价格合法性，检查下单商品必须为 AVAILABLE。下单事务使用数据库行锁，把状态改为 RESERVED 并保存 PENDING_PAYMENT 订单及价格快照；重复购买拒绝，返回 409。buyerName 是演示输入，未实现登录鉴权。
+
+采用 MySQL、Spring Data JPA 与 DTO，实现发布商品、商品列表、商品详情、创建订单、订单详情五个接口。测试独立使用 H2，覆盖 Repository 读写和唯一约束、Service 规则及 API 响应。

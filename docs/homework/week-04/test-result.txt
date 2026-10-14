@@ -1,0 +1,128 @@
+[INFO] Scanning for projects...
+[INFO]
+[INFO] ------------------------< com.zjgsu.cyy:course >------------------------
+[INFO] Building Campus Trade 0.0.1-SNAPSHOT
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO]
+[INFO] --- resources:3.3.1:resources (default-resources) @ course ---
+[INFO] Copying 1 resource from src\main\resources to target\classes
+[INFO] Copying 0 resource from src\main\resources to target\classes
+[INFO]
+[INFO] --- compiler:3.14.1:compile (default-compile) @ course ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO]
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ course ---
+[INFO] Copying 1 resource from src\test\resources to target\test-classes
+[INFO]
+[INFO] --- compiler:3.14.1:testCompile (default-testCompile) @ course ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO]
+[INFO] --- surefire:3.5.6:test (default-test) @ course ---
+[INFO] Using auto detected provider org.apache.maven.surefire.junitplatform.JUnitPlatformProvider
+[INFO]
+[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+[INFO] Running com.zjgsu.cyy.controller.OrderControllerTests
+15:42:56.302 [main] INFO org.springframework.test.context.support.AnnotationConfigContextLoaderUtils -- Could not detect default configuration classes for test class [com.zjgsu.cyy.controller.OrderControllerTests]: OrderControllerTests does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+15:42:56.463 [main] INFO org.springframework.boot.test.context.SpringBootTestContextBootstrapper -- Found @SpringBootConfiguration com.zjgsu.cyy.CourseApplication for test class com.zjgsu.cyy.controller.OrderControllerTests
+15:42:56.545 [main] INFO org.springframework.test.context.support.AnnotationConfigContextLoaderUtils -- Could not detect default configuration classes for test class [com.zjgsu.cyy.controller.OrderControllerTests]: OrderControllerTests does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+15:42:56.547 [main] INFO org.springframework.boot.test.context.SpringBootTestContextBootstrapper -- Found @SpringBootConfiguration com.zjgsu.cyy.CourseApplication for test class com.zjgsu.cyy.controller.OrderControllerTests
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v4.0.8)
+
+2026-10-14T15:42:56.902+08:00  INFO 33372 --- [           main] c.z.cyy.controller.OrderControllerTests  : Starting OrderControllerTests using Java 25.0.4.1 with PID 33372 (started by ���� in E:\weifuwu\homework\microservices-practice-2412190609\monolith)
+2026-10-14T15:42:56.905+08:00  INFO 33372 --- [           main] c.z.cyy.controller.OrderControllerTests  : No active profile set, falling back to 1 default profile: "default"
+2026-10-14T15:42:57.694+08:00  INFO 33372 --- [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-10-14T15:42:57.751+08:00  INFO 33372 --- [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 45 ms. Found 2 JPA repository interfaces.
+2026-10-14T15:42:58.248+08:00  INFO 33372 --- [           main] org.hibernate.orm.jpa                    : HHH008540: Processing PersistenceUnitInfo [name: default]
+2026-10-14T15:42:58.324+08:00  INFO 33372 --- [           main] org.hibernate.orm.core                   : HHH000001: Hibernate ORM core version 7.2.24.Final
+2026-10-14T15:42:58.898+08:00  INFO 33372 --- [           main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-10-14T15:42:58.937+08:00  INFO 33372 --- [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-10-14T15:42:59.178+08:00  INFO 33372 --- [           main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection conn0: url=jdbc:h2:mem:trade_test user=SA
+2026-10-14T15:42:59.179+08:00  INFO 33372 --- [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-10-14T15:42:59.249+08:00  INFO 33372 --- [           main] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [jdbc:h2:mem:trade_test]
+	Database driver: H2 JDBC Driver
+	Database dialect: H2Dialect
+	Database version: 2.4.240
+	Default catalog/schema: TRADE_TEST/PUBLIC
+	Autocommit mode: undefined/unknown
+	Isolation level: READ_COMMITTED [default READ_COMMITTED]
+	JDBC fetch size: 100
+	Pool: DataSourceConnectionProvider
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-10-14T15:43:00.140+08:00  INFO 33372 --- [           main] org.hibernate.orm.core                   : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-10-14T15:43:00.193+08:00  INFO 33372 --- [           main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-10-14T15:43:00.264+08:00  INFO 33372 --- [           main] o.s.d.j.r.query.QueryEnhancerFactories   : Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-10-14T15:43:01.728+08:00  INFO 33372 --- [           main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 1 endpoint beneath base path '/actuator'
+2026-10-14T15:43:01.784+08:00  INFO 33372 --- [           main] c.z.cyy.controller.OrderControllerTests  : Started OrderControllerTests in 5.178 seconds (process running for 11.374)
+Mockito is currently self-attaching to enable the inline-mock-maker. This will no longer work in future releases of the JDK. Please add Mockito as an agent to your build as described in Mockito's documentation: https://javadoc.io/doc/org.mockito/mockito-core/latest/org.mockito/org/mockito/Mockito.html#0.3
+OpenJDK 64-Bit Server VM warning: Sharing is only supported for boot loader classes because bootstrap classpath has been appended
+WARNING: A Java agent has been loaded dynamically (D:\codexwork\maven-cache\repository\net\bytebuddy\byte-buddy-agent\1.17.8\byte-buddy-agent-1.17.8.jar)
+WARNING: If a serviceability tool is in use, please run with -XX:+EnableDynamicAgentLoading to hide this warning
+WARNING: If a serviceability tool is not in use, please run with -Djdk.instrument.traceUsage for more information
+WARNING: Dynamic loading of agents will be disallowed by default in a future release
+2026-10-14T15:43:02.455+08:00  INFO 33372 --- [           main] o.s.mock.web.MockServletContext          : Initializing Spring TestDispatcherServlet ''
+2026-10-14T15:43:02.457+08:00  INFO 33372 --- [           main] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
+2026-10-14T15:43:02.457+08:00  INFO 33372 --- [           main] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 0 ms
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 6.633 s -- in com.zjgsu.cyy.controller.OrderControllerTests
+[INFO] Running com.zjgsu.cyy.controller.ProductControllerTests
+2026-10-14T15:43:02.759+08:00  INFO 33372 --- [           main] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.zjgsu.cyy.controller.ProductControllerTests]: ProductControllerTests does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-10-14T15:43:02.760+08:00  INFO 33372 --- [           main] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration com.zjgsu.cyy.CourseApplication for test class com.zjgsu.cyy.controller.ProductControllerTests
+2026-10-14T15:43:02.761+08:00  INFO 33372 --- [           main] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.zjgsu.cyy.controller.ProductControllerTests]: ProductControllerTests does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-10-14T15:43:02.762+08:00  INFO 33372 --- [           main] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration com.zjgsu.cyy.CourseApplication for test class com.zjgsu.cyy.controller.ProductControllerTests
+2026-10-14T15:43:02.770+08:00  INFO 33372 --- [           main] o.s.mock.web.MockServletContext          : Initializing Spring TestDispatcherServlet ''
+2026-10-14T15:43:02.770+08:00  INFO 33372 --- [           main] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
+2026-10-14T15:43:02.770+08:00  INFO 33372 --- [           main] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 0 ms
+2026-10-14T15:43:02.811+08:00  INFO 33372 --- [           main] o.s.mock.web.MockServletContext          : Initializing Spring TestDispatcherServlet ''
+2026-10-14T15:43:02.812+08:00  INFO 33372 --- [           main] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
+2026-10-14T15:43:02.812+08:00  INFO 33372 --- [           main] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 0 ms
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.065 s -- in com.zjgsu.cyy.controller.ProductControllerTests
+[INFO] Running com.zjgsu.cyy.CourseApplicationTests
+2026-10-14T15:43:02.826+08:00  INFO 33372 --- [           main] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.zjgsu.cyy.CourseApplicationTests]: CourseApplicationTests does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-10-14T15:43:02.835+08:00  INFO 33372 --- [           main] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration com.zjgsu.cyy.CourseApplication for test class com.zjgsu.cyy.CourseApplicationTests
+2026-10-14T15:43:02.836+08:00  INFO 33372 --- [           main] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.zjgsu.cyy.CourseApplicationTests]: CourseApplicationTests does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-10-14T15:43:02.837+08:00  INFO 33372 --- [           main] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration com.zjgsu.cyy.CourseApplication for test class com.zjgsu.cyy.CourseApplicationTests
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.017 s -- in com.zjgsu.cyy.CourseApplicationTests
+[INFO] Running com.zjgsu.cyy.repository.RepositoryTests
+2026-10-14T15:43:02.844+08:00  INFO 33372 --- [           main] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.zjgsu.cyy.repository.RepositoryTests]: RepositoryTests does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-10-14T15:43:02.855+08:00  INFO 33372 --- [           main] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration com.zjgsu.cyy.CourseApplication for test class com.zjgsu.cyy.repository.RepositoryTests
+2026-10-14T15:43:02.856+08:00  INFO 33372 --- [           main] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.zjgsu.cyy.repository.RepositoryTests]: RepositoryTests does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-10-14T15:43:02.857+08:00  INFO 33372 --- [           main] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration com.zjgsu.cyy.CourseApplication for test class com.zjgsu.cyy.repository.RepositoryTests
+2026-10-14T15:43:02.887+08:00  WARN 33372 --- [           main] org.hibernate.orm.jdbc.error             : HHH000247: ErrorCode: 23505, SQLState: 23505
+2026-10-14T15:43:02.887+08:00  WARN 33372 --- [           main] org.hibernate.orm.jdbc.error             : Unique index or primary key violation: "PUBLIC.UK_ORDER_PRODUCT INDEX PUBLIC.UK_ORDER_PRODUCT_INDEX_C ON PUBLIC.TRADE_ORDERS(PRODUCT_ID NULLS FIRST) VALUES ( /* 3 */ '7133a466-3c2a-4301-a0c8-1517bb2e3e15' )"; SQL statement:
+insert into trade_orders (amount,buyer_name,created_at,product_id,status,id) values (?,?,?,?,?,?) [23505-240]
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.052 s -- in com.zjgsu.cyy.repository.RepositoryTests
+[INFO] Running com.zjgsu.cyy.service.OrderServiceTests
+2026-10-14T15:43:02.897+08:00  INFO 33372 --- [           main] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.zjgsu.cyy.service.OrderServiceTests]: OrderServiceTests does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-10-14T15:43:02.907+08:00  INFO 33372 --- [           main] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration com.zjgsu.cyy.CourseApplication for test class com.zjgsu.cyy.service.OrderServiceTests
+2026-10-14T15:43:02.908+08:00  INFO 33372 --- [           main] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.zjgsu.cyy.service.OrderServiceTests]: OrderServiceTests does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-10-14T15:43:02.909+08:00  INFO 33372 --- [           main] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration com.zjgsu.cyy.CourseApplication for test class com.zjgsu.cyy.service.OrderServiceTests
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.049 s -- in com.zjgsu.cyy.service.OrderServiceTests
+[INFO] Running com.zjgsu.cyy.service.ProductServiceTests
+2026-10-14T15:43:02.947+08:00  INFO 33372 --- [           main] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.zjgsu.cyy.service.ProductServiceTests]: ProductServiceTests does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-10-14T15:43:02.948+08:00  INFO 33372 --- [           main] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration com.zjgsu.cyy.CourseApplication for test class com.zjgsu.cyy.service.ProductServiceTests
+2026-10-14T15:43:02.949+08:00  INFO 33372 --- [           main] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.zjgsu.cyy.service.ProductServiceTests]: ProductServiceTests does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-10-14T15:43:02.949+08:00  INFO 33372 --- [           main] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration com.zjgsu.cyy.CourseApplication for test class com.zjgsu.cyy.service.ProductServiceTests
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.025 s -- in com.zjgsu.cyy.service.ProductServiceTests
+[INFO]
+[INFO] Results:
+[INFO]
+[INFO] Tests run: 14, Failures: 0, Errors: 0, Skipped: 0
+[INFO]
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  16.383 s
+[INFO] Finished at: 2026-10-14T15:43:03+08:00
+[INFO] ------------------------------------------------------------------------

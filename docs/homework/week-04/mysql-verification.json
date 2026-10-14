@@ -1,0 +1,11 @@
+{
+  "productId": "23e0a790-f76e-4e9b-ab93-df7d2c0103d2",
+  "duplicateStatus": 409,
+  "amount": 25.5,
+  "productStatus": "RESERVED",
+  "orderId": "39b608a6-bf68-447e-841e-f737a0bcd813",
+  "restartVerified": true,
+  "mysqlVersion": "8.4.11",
+  "verifiedDate": "2026-10-14",
+  "note": "HTTP used temporary port 8082; default remains 8080. No passwords included."
+}

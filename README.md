@@ -6,7 +6,7 @@
 
 本项目面向校内学生，提供闲置商品发布、下单、校内面交和模拟担保结算功能，帮助买卖双方记录交易过程，并通过明确的订单状态和简单纠纷处理协调交付与结算。本学期持续使用本仓库，先实现模块化单体，再按课程要求逐步增加认证、消息、服务拆分、监控和部署能力。
 
-**当前阶段：第三周工程初始化。已实现基础启动与验证接口；以下交易业务仍为设计目标，尚未实现。**
+**当前阶段：第四周单体应用。已实现商品发布、查询、下单及 JPA 持久化；支付、登录、面交和纠纷等仍为后续设计目标。**
 ## 业务背景与目标用户
 
 学生在毕业、搬宿舍或更换学习用品时，经常需要转让教材、数码配件及生活用品。通过群聊交流时，商品是否已经售出、双方是否约定交付、交易是否结束等信息容易分散，出现争议时也缺少统一记录。本项目以单一校园内的二手交易为场景，用商品状态、订单记录和模拟担保结算串联交易，探索如何让交易过程可查询、可追踪、可恢复。
@@ -179,3 +179,63 @@ Maven Wrapper 下载与依赖缓存放在 D 盘，编译输出在 monolith/targe
 - contextLoads 测试结果以 Tests run、Failures、Errors 和 BUILD SUCCESS 为判断依据。
 
 详细记录见[第三周作业](docs/homework/week-03/index.md)，选题衔接见[项目规划](docs/project-proposal.md)。
+
+
+## 第四周：商品与订单持久化（当前运行方式）
+
+第三周的命令记录保留供历史参考。当前启动前必须配置 MySQL；自动化测试独立使用 H2，不需要先启动 MySQL。
+
+### MySQL 安装与建库
+
+从 [MySQL 官方](https://dev.mysql.com/downloads/mysql/8.4.html) 下载 Windows ZIP，解压到非 C 盘目录。采用独立配置文件指定 basedir、datadir、tmpdir 和端口，用 mysqld 初始化数据目录并设置管理员密码，再启动实例。本机使用 MySQL 8.4.11，程序位于 D:/codexwork/Applications/mysql-8.4.11-winx64，数据位于 D:/codexwork/mysql-campus-trade/data，仅监听 127.0.0.1:3307，避免与已有 MySQL 8.0 冲突。
+
+其他电脑可用本地已有的 MySQL 8.4，管理员执行以下 SQL；请替换示例密码：
+
+```sql
+CREATE DATABASE IF NOT EXISTS campus_trade CHARACTER SET utf8mb4;
+CREATE USER IF NOT EXISTS 'campus_trade'@'localhost' IDENTIFIED BY 'replace-with-your-password';
+GRANT ALL PRIVILEGES ON campus_trade.* TO 'campus_trade'@'localhost';
+```
+
+已有同名用户时应使用实际密码，CREATE USER IF NOT EXISTS 不会修改旧密码。
+
+### 启动与测试
+
+在已配置 Java 25 和 Maven 缓存的 Git Bash 中，从仓库根目录执行：
+
+```bash
+cd monolith
+./mvnw.cmd test
+export DB_URL='jdbc:mysql://127.0.0.1:3307/campus_trade?connectionTimeZone=UTC'
+export DB_USER='campus_trade'
+read -s -p 'MySQL password: ' DB_PASSWORD; echo
+export DB_PASSWORD
+./mvnw.cmd spring-boot:run
+```
+
+Linux/macOS 使用 `./mvnw`。数据库端口若为 3306，请修改 DB_URL。应用默认端口为 8080；先停止旧应用再启动。密码不要写入 Git。
+
+本机另有仓库外辅助脚本 `D:/codexwork/start-campus-trade.ps1`，会启动 D 盘数据库并读取本地凭据；其他电脑不依赖该脚本。PowerShell 执行 `& 'D:/codexwork/start-campus-trade.ps1'`。
+
+### 可直接执行的请求示例
+
+应用启动后，在 Git Bash 执行：
+
+```bash
+curl -i -X POST 'http://localhost:8080/api/products' -H 'Content-Type: application/json' -d '{"title":"Used textbook","description":"Good condition","price":25.50}'
+curl -i 'http://localhost:8080/api/products'
+```
+
+发布返回 201 和商品 id。将其代入下面的 PRODUCT_ID：
+
+```bash
+curl -i -X POST 'http://localhost:8080/api/orders' -H 'Content-Type: application/json' -d '{"productId":"PRODUCT_ID","buyerName":"Alice"}'
+```
+
+下单成功返回 201、订单 id 和价格快照；相同商品再次下单返回 409。GET /api/products/{id} 查询商品详情，GET /api/orders/{id} 查询订单。不存在返回 404；空名称、非正价格等输入错误返回 400。
+
+### 测试数据与范围
+
+测试代码会创建商品与订单数据，使用 H2 和测试事务回滚，可重复执行；不会连接本地 MySQL。MySQL 演示数据通过上面的 POST 请求创建，新建商品 ID 每次不同。
+
+目前没有用户认证，buyerName 仅为演示输入；商品与订单不支持取消、删除、退款、重新销售或真实支付。本周每件商品至多一笔订单，数据库有唯一约束，下单通过事务和商品行锁保护。数据库设计见 [docs/database.md](docs/database.md)。

@@ -1,4 +1,12 @@
 spring:
+  datasource:
+    url: ${DB_URL:jdbc:mysql://127.0.0.1:3307/campus_trade?connectionTimeZone=UTC}
+    username: ${DB_USER:campus_trade}
+    password: ${DB_PASSWORD:}
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: update
   application:
     name: campus-trade
 
