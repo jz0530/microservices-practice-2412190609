@@ -1,0 +1,36 @@
+{
+  "verifiedAt": "2026-10-20T17:25:15.871507",
+  "baseUrl": "http://localhost:8084",
+  "createStatus": 201,
+  "queryStatus": 200,
+  "health": {
+    "groups": [
+      "liveness",
+      "readiness"
+    ],
+    "status": "UP"
+  },
+  "before": {
+    "id": "0f7b9679-90c2-495f-b7a6-2cf75b8411ea",
+    "title": "Week05 Docker textbook",
+    "description": "Named volume persistence verification",
+    "price": 25.5,
+    "status": "AVAILABLE"
+  },
+  "after": {
+    "id": "0f7b9679-90c2-495f-b7a6-2cf75b8411ea",
+    "title": "Week05 Docker textbook",
+    "description": "Named volume persistence verification",
+    "price": 25.5,
+    "status": "AVAILABLE"
+  },
+  "containersBefore": [
+    "c707437708cde568a7c22f56fd90c46c0f091c6186b4ff0771d6d24734ceee16",
+    "ffb46a5613be9defa46e3c6527f9d1019e542d8e2e969d3dd6aec1ba18d555e2"
+  ],
+  "containersAfter": [
+    "bbe7b325c21a8e059778ece7f5d17453cd54db89091444411f93c2ccf3ea9078",
+    "926ea05631f6ff628a1c9ce4ef0179a7bb332d7360d15aa0c4477d58e6796421"
+  ],
+  "equal": true
+}

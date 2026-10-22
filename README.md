@@ -6,7 +6,7 @@
 
 本项目面向校内学生，提供闲置商品发布、下单、校内面交和模拟担保结算功能，帮助买卖双方记录交易过程，并通过明确的订单状态和简单纠纷处理协调交付与结算。本学期持续使用本仓库，先实现模块化单体，再按课程要求逐步增加认证、消息、服务拆分、监控和部署能力。
 
-**当前阶段：第四周单体应用。已实现商品发布、查询、下单及 JPA 持久化；支付、登录、面交和纠纷等仍为后续设计目标。**
+**当前阶段：第五周 Docker 容器化。已实现商品发布、查询、下单及 JPA 持久化；支付、登录、面交和纠纷等仍为后续设计目标。**
 ## 业务背景与目标用户
 
 学生在毕业、搬宿舍或更换学习用品时，经常需要转让教材、数码配件及生活用品。通过群聊交流时，商品是否已经售出、双方是否约定交付、交易是否结束等信息容易分散，出现争议时也缺少统一记录。本项目以单一校园内的二手交易为场景，用商品状态、订单记录和模拟担保结算串联交易，探索如何让交易过程可查询、可追踪、可恢复。
@@ -181,7 +181,7 @@ Maven Wrapper 下载与依赖缓存放在 D 盘，编译输出在 monolith/targe
 详细记录见[第三周作业](docs/homework/week-03/index.md)，选题衔接见[项目规划](docs/project-proposal.md)。
 
 
-## 第四周：商品与订单持久化（当前运行方式）
+## 第四周：商品与订单持久化（本机 Java 启动方式）
 
 第三周的命令记录保留供历史参考。当前启动前必须配置 MySQL；自动化测试独立使用 H2，不需要先启动 MySQL。
 
@@ -239,3 +239,53 @@ curl -i -X POST 'http://localhost:8080/api/orders' -H 'Content-Type: application
 测试代码会创建商品与订单数据，使用 H2 和测试事务回滚，可重复执行；不会连接本地 MySQL。MySQL 演示数据通过上面的 POST 请求创建，新建商品 ID 每次不同。
 
 目前没有用户认证，buyerName 仅为演示输入；商品与订单不支持取消、删除、退款、重新销售或真实支付。本周每件商品至多一笔订单，数据库有唯一约束，下单通过事务和商品行锁保护。数据库设计见 [docs/database.md](docs/database.md)。
+
+
+## 第五周：Docker 容器化运行
+
+需要已启动的 Docker Desktop（Linux 容器）与 Docker Compose。构建在 Maven 容器中完成，运行镜像使用 Java 25 JRE，无需本机安装 Maven 或 Java。以下命令均在仓库根目录的 Git Bash 执行。
+
+首次准备环境变量（已有 `.env` 时不要覆盖）：
+
+```bash
+cp .env.example .env
+```
+
+编辑 `.env`，将两个示例密码替换为自己的密码；真实 `.env` 不提交。默认本机端口为 **8084**，容器内部为 8080，避免与课堂项目 8083 冲突。修改 APP_PORT 后，下方 URL 也应相应修改。
+
+```bash
+docker compose config --quiet
+docker build -t campus-trade:week05 ./monolith
+docker image ls campus-trade:week05
+docker compose up -d --build
+docker compose ps
+docker compose logs --tail=30 app
+```
+
+app 使用共享网络中的 `mysql:3306` 连接 MySQL 8.4.11，数据库健康检查通过后才启动应用。数据库没有映射到本机端口；数据保存在命名卷 `cyy-campus-trade_mysql-data`。首次启动后等待日志出现 `Started CourseApplication`。
+
+### 健康检查、创建与查询
+
+```bash
+curl -i http://localhost:8084/actuator/health
+curl -i -X POST http://localhost:8084/api/products -H 'Content-Type: application/json' -d '{"title":"Docker week05 textbook","description":"Container persistence demo","price":25.50}'
+curl -i http://localhost:8084/api/products
+```
+
+健康接口应返回 200 和 UP；创建返回 201 和商品 ID；查询返回 200。复制创建返回的真实 ID，替换下面占位值：
+
+```bash
+PRODUCT_ID='替换为创建返回的商品ID'
+curl -i "http://localhost:8084/api/products/$PRODUCT_ID"
+docker compose down
+docker compose up -d
+docker compose ps
+# 等待应用启动完成后再次查询同一 ID
+curl -i "http://localhost:8084/api/products/$PRODUCT_ID"
+```
+
+对比重建前后的 ID、标题、价格和状态，应保持一致。`docker compose down` 删除容器与网络，但保留命名数据卷；**本项验证不要运行 `docker compose down -v`**，它会删除数据库数据卷。
+
+仅停止、不删除容器可执行 `docker compose stop`，恢复使用 `docker compose start`。重建停止环境使用上述 down / up 命令。改变 `.env` 中数据库密码不会自动改变已有数据卷里的 MySQL 用户密码。
+
+本周记录见 [第五周作业](docs/homework/week-05/index.md)。已有商品、订单规则保持沿用；尚未实现登录、支付或业务服务拆分。
