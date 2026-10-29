@@ -6,7 +6,7 @@
 
 本项目面向校内学生，提供闲置商品发布、下单、校内面交和模拟担保结算功能，帮助买卖双方记录交易过程，并通过明确的订单状态和简单纠纷处理协调交付与结算。本学期持续使用本仓库，先实现模块化单体，再按课程要求逐步增加认证、消息、服务拆分、监控和部署能力。
 
-**当前阶段：第五周 Docker 容器化。已实现商品发布、查询、下单及 JPA 持久化；支付、登录、面交和纠纷等仍为后续设计目标。**
+**当前阶段：第六周微服务拆分。用户、商品、订单三个独立服务通过 HTTP 协作；单体版本保留在 monolith。支付、登录、面交和纠纷仍为后续设计目标。**
 ## 业务背景与目标用户
 
 学生在毕业、搬宿舍或更换学习用品时，经常需要转让教材、数码配件及生活用品。通过群聊交流时，商品是否已经售出、双方是否约定交付、交易是否结束等信息容易分散，出现争议时也缺少统一记录。本项目以单一校园内的二手交易为场景，用商品状态、订单记录和模拟担保结算串联交易，探索如何让交易过程可查询、可追踪、可恢复。
@@ -254,12 +254,12 @@ cp .env.example .env
 编辑 `.env`，将两个示例密码替换为自己的密码；真实 `.env` 不提交。默认本机端口为 **8084**，容器内部为 8080，避免与课堂项目 8083 冲突。修改 APP_PORT 后，下方 URL 也应相应修改。
 
 ```bash
-docker compose config --quiet
+docker compose -f compose.monolith.yaml config --quiet
 docker build -t campus-trade:week05 ./monolith
 docker image ls campus-trade:week05
-docker compose up -d --build
-docker compose ps
-docker compose logs --tail=30 app
+docker compose -f compose.monolith.yaml up -d --build
+docker compose -f compose.monolith.yaml ps
+docker compose -f compose.monolith.yaml logs --tail=30 app
 ```
 
 app 使用共享网络中的 `mysql:3306` 连接 MySQL 8.4.11，数据库健康检查通过后才启动应用。数据库没有映射到本机端口；数据保存在命名卷 `cyy-campus-trade_mysql-data`。首次启动后等待日志出现 `Started CourseApplication`。
@@ -277,15 +277,80 @@ curl -i http://localhost:8084/api/products
 ```bash
 PRODUCT_ID='替换为创建返回的商品ID'
 curl -i "http://localhost:8084/api/products/$PRODUCT_ID"
-docker compose down
-docker compose up -d
-docker compose ps
+docker compose -f compose.monolith.yaml down
+docker compose -f compose.monolith.yaml up -d
+docker compose -f compose.monolith.yaml ps
 # 等待应用启动完成后再次查询同一 ID
 curl -i "http://localhost:8084/api/products/$PRODUCT_ID"
 ```
 
-对比重建前后的 ID、标题、价格和状态，应保持一致。`docker compose down` 删除容器与网络，但保留命名数据卷；**本项验证不要运行 `docker compose down -v`**，它会删除数据库数据卷。
+对比重建前后的 ID、标题、价格和状态，应保持一致。`docker compose -f compose.monolith.yaml down` 删除容器与网络，但保留命名数据卷；**本项验证不要运行 `docker compose -f compose.monolith.yaml down -v`**，它会删除数据库数据卷。
 
-仅停止、不删除容器可执行 `docker compose stop`，恢复使用 `docker compose start`。重建停止环境使用上述 down / up 命令。改变 `.env` 中数据库密码不会自动改变已有数据卷里的 MySQL 用户密码。
+仅停止、不删除容器可执行 `docker compose -f compose.monolith.yaml stop`，恢复使用 `docker compose -f compose.monolith.yaml start`。重建停止环境使用上述 down / up 命令。改变 `.env` 中数据库密码不会自动改变已有数据卷里的 MySQL 用户密码。
 
 本周记录见 [第五周作业](docs/homework/week-05/index.md)。已有商品、订单规则保持沿用；尚未实现登录、支付或业务服务拆分。
+
+
+## 第六周：微服务运行
+
+当前根目录 compose.yaml 启动第六周三个服务。第五周单体使用上节 compose.monolith.yaml。两套环境项目名、端口和数据卷相互独立。早期“技术演进方向”为原选题规划，当前实际边界以 [微服务设计](docs/microservices-design.md) 为准。
+
+以下命令在仓库根目录 Git Bash 执行，需要 Docker Desktop Linux 容器；镜像构建不依赖本机 Java/Maven。
+
+```bash
+# 仅首次没有 .env 时复制，保留已有密码
+test -f .env || cp .env.example .env
+# 编辑 .env，配置六个 USER/PRODUCT/ORDER 数据库及 root 密码
+docker compose config --quiet
+docker compose up -d --build
+docker compose ps
+bash scripts/smoke-test.sh
+```
+
+首次启动需等数据库初始化和应用完成启动。端口默认 user=8101、product=8102、order=8103；可在 .env 中改 USER_PORT、PRODUCT_PORT、ORDER_PORT。修改端口后，验证脚本需对应设置 USER_SERVICE_URL、PRODUCT_SERVICE_URL、ORDER_SERVICE_URL。不要将真实 .env 提交到 Git。
+
+### 业务请求
+
+```bash
+curl -i http://localhost:8101/actuator/health
+curl -i http://localhost:8102/actuator/health
+curl -i http://localhost:8103/actuator/health
+curl -i -X POST http://localhost:8101/api/users -H 'Content-Type: application/json' -d '{"name":"Alice"}'
+curl -i -X POST http://localhost:8102/api/products -H 'Content-Type: application/json' -d '{"title":"Week06 textbook","description":"HTTP demo","price":25.50}'
+# 分别替换为上面返回的真实 UUID
+BUYER_ID='替换为用户ID'
+PRODUCT_ID='替换为商品ID'
+curl -i -X POST http://localhost:8103/api/orders -H 'Content-Type: application/json' -d "{\"buyerId\":\"$BUYER_ID\",\"productId\":\"$PRODUCT_ID\"}"
+curl -i http://localhost:8103/api/orders
+curl -i "http://localhost:8102/api/products/$PRODUCT_ID"
+```
+
+下单成功为 201，查询为 200；再次下单同一商品返回 409。不存在的用户/商品返回 404；依赖服务不可用返回 503，失败时不新增本地订单。
+
+### 可重复验证与测试
+
+```bash
+bash scripts/smoke-test.sh
+# 需要 Python 3；Windows 也可使用 py -3
+python scripts/verify-flow.py --dependency-failure
+```
+
+业务验证脚本每次新建演示用户、商品及一笔订单，断言成功及失败场景中的状态和订单数量。--dependency-failure 会短暂停止商品服务，验证 503 后在 finally 中恢复。输出 docs/homework/week-06/verification.json 为本次真实 HTTP 证据，不是截图。省略该选项则不停止容器。
+
+各服务测试使用 H2，订单测试启动本地 HTTP 服务验证实际 RestTemplate 请求、错误和超时，不依赖 MySQL。已配置 JDK 25 后，Windows Git Bash 从仓库根目录运行：
+
+```bash
+(cd services/user-service && ./mvnw.cmd test)
+(cd services/product-service && ./mvnw.cmd test)
+(cd services/order-service && ./mvnw.cmd test)
+```
+
+Linux/macOS 将 ./mvnw.cmd 换成 bash ./mvnw，或在各服务目录执行 mvn test。Dockerfile 的 Maven 构建也运行测试。查看日志与停止：
+
+```bash
+docker compose logs --tail=40 order-service
+docker compose stop
+docker compose start
+```
+
+数据由三个命名卷保留。不要执行删除数据卷的 down -v。当前不实现登录、支付或分布式事务；已占用商品但订单写入失败的窗口及边界见设计文档。第六周实际结果和截图清单见 [本周记录](docs/homework/week-06/index.md)。

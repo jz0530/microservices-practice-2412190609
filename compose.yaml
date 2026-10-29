@@ -1,36 +1,105 @@
-name: cyy-campus-trade
+name: cyy-trade-week06
 services:
-  mysql:
+  user-mysql:
     image: mysql:8.4.11
     environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:?Set MYSQL_ROOT_PASSWORD in .env}
-      MYSQL_DATABASE: ${MYSQL_DATABASE:-campus_trade}
-      MYSQL_USER: ${MYSQL_USER:-campus_trade}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD:?Set MYSQL_PASSWORD in .env}
+      MYSQL_DATABASE: trade_user
+      MYSQL_USER: trade_user
+      MYSQL_PASSWORD: ${USER_DB_PASSWORD:?Set USER_DB_PASSWORD in .env}
+      MYSQL_ROOT_PASSWORD: ${USER_DB_ROOT_PASSWORD:?Set USER_DB_ROOT_PASSWORD in .env}
     volumes:
-      - mysql-data:/var/lib/mysql
-    networks: [trade-network]
+      - user-data:/var/lib/mysql
+    networks: [user-db]
     healthcheck:
-      test: ["CMD-SHELL", "mysql --protocol=TCP -h 127.0.0.1 -u\"$${MYSQL_USER}\" -p\"$${MYSQL_PASSWORD}\" \"$${MYSQL_DATABASE}\" -e 'SELECT 1'"]
+      test: ["CMD-SHELL", "mysql --protocol=TCP -h 127.0.0.1 -u$$MYSQL_USER -p$$MYSQL_PASSWORD $$MYSQL_DATABASE -e 'SELECT 1'"]
       interval: 5s
       timeout: 5s
       retries: 30
       start_period: 30s
-  app:
-    image: campus-trade:week05
-    build:
-      context: ./monolith
+  user-service:
+    image: campus-trade-user:week06
+    build: ./services/user-service
     ports:
-      - "127.0.0.1:${APP_PORT:-8084}:8080"
+      - "127.0.0.1:${USER_PORT:-8101}:8080"
     environment:
-      DB_URL: jdbc:mysql://mysql:3306/${MYSQL_DATABASE:-campus_trade}?connectionTimeZone=UTC
-      DB_USER: ${MYSQL_USER:-campus_trade}
-      DB_PASSWORD: ${MYSQL_PASSWORD:?Set MYSQL_PASSWORD in .env}
+      SERVER_PORT: 8080
+      DB_URL: jdbc:mysql://user-mysql:3306/trade_user?connectionTimeZone=UTC
+      DB_USER: trade_user
+      DB_PASSWORD: ${USER_DB_PASSWORD:?Set USER_DB_PASSWORD in .env}
     depends_on:
-      mysql:
+      user-mysql:
         condition: service_healthy
-    networks: [trade-network]
+    networks: [service-network, user-db]
+  product-mysql:
+    image: mysql:8.4.11
+    environment:
+      MYSQL_DATABASE: trade_product
+      MYSQL_USER: trade_product
+      MYSQL_PASSWORD: ${PRODUCT_DB_PASSWORD:?Set PRODUCT_DB_PASSWORD in .env}
+      MYSQL_ROOT_PASSWORD: ${PRODUCT_DB_ROOT_PASSWORD:?Set PRODUCT_DB_ROOT_PASSWORD in .env}
+    volumes:
+      - product-data:/var/lib/mysql
+    networks: [product-db]
+    healthcheck:
+      test: ["CMD-SHELL", "mysql --protocol=TCP -h 127.0.0.1 -u$$MYSQL_USER -p$$MYSQL_PASSWORD $$MYSQL_DATABASE -e 'SELECT 1'"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+      start_period: 30s
+  product-service:
+    image: campus-trade-product:week06
+    build: ./services/product-service
+    ports:
+      - "127.0.0.1:${PRODUCT_PORT:-8102}:8080"
+    environment:
+      SERVER_PORT: 8080
+      DB_URL: jdbc:mysql://product-mysql:3306/trade_product?connectionTimeZone=UTC
+      DB_USER: trade_product
+      DB_PASSWORD: ${PRODUCT_DB_PASSWORD:?Set PRODUCT_DB_PASSWORD in .env}
+    depends_on:
+      product-mysql:
+        condition: service_healthy
+    networks: [service-network, product-db]
+  order-mysql:
+    image: mysql:8.4.11
+    environment:
+      MYSQL_DATABASE: trade_order
+      MYSQL_USER: trade_order
+      MYSQL_PASSWORD: ${ORDER_DB_PASSWORD:?Set ORDER_DB_PASSWORD in .env}
+      MYSQL_ROOT_PASSWORD: ${ORDER_DB_ROOT_PASSWORD:?Set ORDER_DB_ROOT_PASSWORD in .env}
+    volumes:
+      - order-data:/var/lib/mysql
+    networks: [order-db]
+    healthcheck:
+      test: ["CMD-SHELL", "mysql --protocol=TCP -h 127.0.0.1 -u$$MYSQL_USER -p$$MYSQL_PASSWORD $$MYSQL_DATABASE -e 'SELECT 1'"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+      start_period: 30s
+  order-service:
+    image: campus-trade-order:week06
+    build: ./services/order-service
+    ports:
+      - "127.0.0.1:${ORDER_PORT:-8103}:8080"
+    environment:
+      SERVER_PORT: 8080
+      DB_URL: jdbc:mysql://order-mysql:3306/trade_order?connectionTimeZone=UTC
+      DB_USER: trade_order
+      DB_PASSWORD: ${ORDER_DB_PASSWORD:?Set ORDER_DB_PASSWORD in .env}
+      USER_SERVICE_URL: http://user-service:8080
+      PRODUCT_SERVICE_URL: http://product-service:8080
+      HTTP_CONNECT_TIMEOUT_MS: 2000
+      HTTP_READ_TIMEOUT_MS: 3000
+    depends_on:
+      order-mysql:
+        condition: service_healthy
+    networks: [service-network, order-db]
 volumes:
-  mysql-data:
+  user-data:
+  product-data:
+  order-data:
 networks:
-  trade-network:
+  service-network:
+  user-db:
+  product-db:
+  order-db:

@@ -1,0 +1,18 @@
+server:
+  port: ${SERVER_PORT:8101}
+spring:
+  application:
+    name: user-service
+  datasource:
+    url: ${DB_URL:jdbc:mysql://localhost:3306/trade_user?connectionTimeZone=UTC}
+    username: ${DB_USER:trade_user}
+    password: ${DB_PASSWORD:}
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: update
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health

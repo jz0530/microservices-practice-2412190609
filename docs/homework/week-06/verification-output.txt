@@ -1,0 +1,49 @@
+GET http://localhost:8101/actuator/health -> HTTP 200
+{"groups": ["liveness", "readiness"], "status": "UP"}
+GET http://localhost:8102/actuator/health -> HTTP 200
+{"groups": ["liveness", "readiness"], "status": "UP"}
+GET http://localhost:8103/actuator/health -> HTTP 200
+{"groups": ["liveness", "readiness"], "status": "UP"}
+POST http://localhost:8101/api/users -> HTTP 201
+{"id": "a27d0dc2-e27d-43d7-82cc-19312e65ec06", "name": "Week06 Alice"}
+POST http://localhost:8102/api/products -> HTTP 201
+{"id": "af97aeb8-e49a-44cf-b0d8-138ff743fbec", "title": "Week06 HTTP textbook", "description": "Three-service workflow", "price": 25.5, "status": "AVAILABLE"}
+GET http://localhost:8103/api/orders -> HTTP 200
+[]
+POST http://localhost:8103/api/orders -> HTTP 201
+{"id": "23ee8958-4c67-4ed1-807a-49a1d2b2b5b8", "buyerId": "a27d0dc2-e27d-43d7-82cc-19312e65ec06", "productId": "af97aeb8-e49a-44cf-b0d8-138ff743fbec", "amount": 25.5, "createdAt": "2026-10-28T10:24:00.064223978Z", "productTitle": "Week06 HTTP textbook", "status": "PENDING_PAYMENT"}
+GET http://localhost:8102/api/products/af97aeb8-e49a-44cf-b0d8-138ff743fbec -> HTTP 200
+{"id": "af97aeb8-e49a-44cf-b0d8-138ff743fbec", "title": "Week06 HTTP textbook", "description": "Three-service workflow", "price": 25.5, "status": "RESERVED"}
+GET http://localhost:8103/api/orders/23ee8958-4c67-4ed1-807a-49a1d2b2b5b8 -> HTTP 200
+{"id": "23ee8958-4c67-4ed1-807a-49a1d2b2b5b8", "buyerId": "a27d0dc2-e27d-43d7-82cc-19312e65ec06", "productId": "af97aeb8-e49a-44cf-b0d8-138ff743fbec", "amount": 25.5, "createdAt": "2026-10-28T10:24:00.064224Z", "productTitle": "Week06 HTTP textbook", "status": "PENDING_PAYMENT"}
+GET http://localhost:8103/api/orders -> HTTP 200
+[{"id": "23ee8958-4c67-4ed1-807a-49a1d2b2b5b8", "buyerId": "a27d0dc2-e27d-43d7-82cc-19312e65ec06", "productId": "af97aeb8-e49a-44cf-b0d8-138ff743fbec", "amount": 25.5, "createdAt": "2026-10-28T10:24:00.064224Z", "productTitle": "Week06 HTTP textbook", "status": "PENDING_PAYMENT"}]
+POST http://localhost:8103/api/orders -> HTTP 409
+{"detail": "Product already reserved", "instance": "/api/orders", "status": 409, "title": "Conflict"}
+GET http://localhost:8103/api/orders -> HTTP 200
+[{"id": "23ee8958-4c67-4ed1-807a-49a1d2b2b5b8", "buyerId": "a27d0dc2-e27d-43d7-82cc-19312e65ec06", "productId": "af97aeb8-e49a-44cf-b0d8-138ff743fbec", "amount": 25.5, "createdAt": "2026-10-28T10:24:00.064224Z", "productTitle": "Week06 HTTP textbook", "status": "PENDING_PAYMENT"}]
+POST http://localhost:8102/api/products -> HTTP 201
+{"id": "325c29bf-9579-4258-b3e4-c5d8b5a82fc7", "title": "Week06 failure guard", "description": "Must remain available", "price": 12.0, "status": "AVAILABLE"}
+POST http://localhost:8103/api/orders -> HTTP 404
+{"detail": "User not found", "instance": "/api/orders", "status": 404, "title": "Not Found"}
+GET http://localhost:8102/api/products/325c29bf-9579-4258-b3e4-c5d8b5a82fc7 -> HTTP 200
+{"id": "325c29bf-9579-4258-b3e4-c5d8b5a82fc7", "title": "Week06 failure guard", "description": "Must remain available", "price": 12.0, "status": "AVAILABLE"}
+GET http://localhost:8103/api/orders -> HTTP 200
+[{"id": "23ee8958-4c67-4ed1-807a-49a1d2b2b5b8", "buyerId": "a27d0dc2-e27d-43d7-82cc-19312e65ec06", "productId": "af97aeb8-e49a-44cf-b0d8-138ff743fbec", "amount": 25.5, "createdAt": "2026-10-28T10:24:00.064224Z", "productTitle": "Week06 HTTP textbook", "status": "PENDING_PAYMENT"}]
+POST http://localhost:8103/api/orders -> HTTP 404
+{"detail": "Product not found", "instance": "/api/orders", "status": 404, "title": "Not Found"}
+GET http://localhost:8103/api/orders -> HTTP 200
+[{"id": "23ee8958-4c67-4ed1-807a-49a1d2b2b5b8", "buyerId": "a27d0dc2-e27d-43d7-82cc-19312e65ec06", "productId": "af97aeb8-e49a-44cf-b0d8-138ff743fbec", "amount": 25.5, "createdAt": "2026-10-28T10:24:00.064224Z", "productTitle": "Week06 HTTP textbook", "status": "PENDING_PAYMENT"}]
+ Container cyy-trade-week06-product-service-1 Stopping
+ Container cyy-trade-week06-product-service-1 Stopped
+POST http://localhost:8103/api/orders -> HTTP 503
+{"detail": "Product service unavailable or timed out; order not created", "instance": "/api/orders", "status": 503, "title": "Service Unavailable"}
+GET http://localhost:8103/api/orders -> HTTP 200
+[{"id": "23ee8958-4c67-4ed1-807a-49a1d2b2b5b8", "buyerId": "a27d0dc2-e27d-43d7-82cc-19312e65ec06", "productId": "af97aeb8-e49a-44cf-b0d8-138ff743fbec", "amount": 25.5, "createdAt": "2026-10-28T10:24:00.064224Z", "productTitle": "Week06 HTTP textbook", "status": "PENDING_PAYMENT"}]
+ Container cyy-trade-week06-product-mysql-1 Waiting
+ Container cyy-trade-week06-product-mysql-1 Healthy
+ Container cyy-trade-week06-product-service-1 Starting
+ Container cyy-trade-week06-product-service-1 Started
+GET http://localhost:8102/api/products/325c29bf-9579-4258-b3e4-c5d8b5a82fc7 -> HTTP 200
+{"id": "325c29bf-9579-4258-b3e4-c5d8b5a82fc7", "title": "Week06 failure guard", "description": "Must remain available", "price": 12.0, "status": "AVAILABLE"}
+PASS: real HTTP workflow and failure guards; evidence: E:\weifuwu\homework\microservices-practice-2412190609\docs\homework\week-06\verification.json

@@ -1,0 +1,377 @@
+{
+  "verifiedAt": "2026-10-29T08:13:52+0800",
+  "userId": "e52f508b-2e34-4307-abd0-61b869d04aa7",
+  "productId": "9c7cc969-b6ab-4677-906b-5f5870fc5de4",
+  "orderId": "31d6396e-bd01-4143-aab3-cd4f5c146c58",
+  "failureProductId": "47dd361d-14ec-444b-b63e-d0b92889b1bf",
+  "ordersBefore": 1,
+  "ordersAfter": 2,
+  "dependencyFailure": "HTTP 503, no local order written",
+  "events": [
+    {
+      "method": "GET",
+      "url": "http://localhost:8101/actuator/health",
+      "request": null,
+      "status": 200,
+      "response": {
+        "groups": [
+          "liveness",
+          "readiness"
+        ],
+        "status": "UP"
+      }
+    },
+    {
+      "method": "GET",
+      "url": "http://localhost:8102/actuator/health",
+      "request": null,
+      "status": 200,
+      "response": {
+        "groups": [
+          "liveness",
+          "readiness"
+        ],
+        "status": "UP"
+      }
+    },
+    {
+      "method": "GET",
+      "url": "http://localhost:8103/actuator/health",
+      "request": null,
+      "status": 200,
+      "response": {
+        "groups": [
+          "liveness",
+          "readiness"
+        ],
+        "status": "UP"
+      }
+    },
+    {
+      "method": "POST",
+      "url": "http://localhost:8101/api/users",
+      "request": {
+        "name": "Week06 Alice"
+      },
+      "status": 201,
+      "response": {
+        "id": "e52f508b-2e34-4307-abd0-61b869d04aa7",
+        "name": "Week06 Alice"
+      }
+    },
+    {
+      "method": "POST",
+      "url": "http://localhost:8102/api/products",
+      "request": {
+        "title": "Week06 HTTP textbook",
+        "description": "Three-service workflow",
+        "price": 25.5
+      },
+      "status": 201,
+      "response": {
+        "id": "9c7cc969-b6ab-4677-906b-5f5870fc5de4",
+        "title": "Week06 HTTP textbook",
+        "description": "Three-service workflow",
+        "price": 25.5,
+        "status": "AVAILABLE"
+      }
+    },
+    {
+      "method": "GET",
+      "url": "http://localhost:8103/api/orders",
+      "request": null,
+      "status": 200,
+      "response": [
+        {
+          "id": "23ee8958-4c67-4ed1-807a-49a1d2b2b5b8",
+          "buyerId": "a27d0dc2-e27d-43d7-82cc-19312e65ec06",
+          "productId": "af97aeb8-e49a-44cf-b0d8-138ff743fbec",
+          "amount": 25.5,
+          "createdAt": "2026-10-28T10:24:00.064224Z",
+          "productTitle": "Week06 HTTP textbook",
+          "status": "PENDING_PAYMENT"
+        }
+      ]
+    },
+    {
+      "method": "POST",
+      "url": "http://localhost:8103/api/orders",
+      "request": {
+        "buyerId": "e52f508b-2e34-4307-abd0-61b869d04aa7",
+        "productId": "9c7cc969-b6ab-4677-906b-5f5870fc5de4"
+      },
+      "status": 201,
+      "response": {
+        "id": "31d6396e-bd01-4143-aab3-cd4f5c146c58",
+        "buyerId": "e52f508b-2e34-4307-abd0-61b869d04aa7",
+        "productId": "9c7cc969-b6ab-4677-906b-5f5870fc5de4",
+        "amount": 25.5,
+        "createdAt": "2026-10-29T00:13:12.102940304Z",
+        "productTitle": "Week06 HTTP textbook",
+        "status": "PENDING_PAYMENT"
+      }
+    },
+    {
+      "method": "GET",
+      "url": "http://localhost:8102/api/products/9c7cc969-b6ab-4677-906b-5f5870fc5de4",
+      "request": null,
+      "status": 200,
+      "response": {
+        "id": "9c7cc969-b6ab-4677-906b-5f5870fc5de4",
+        "title": "Week06 HTTP textbook",
+        "description": "Three-service workflow",
+        "price": 25.5,
+        "status": "RESERVED"
+      }
+    },
+    {
+      "method": "GET",
+      "url": "http://localhost:8103/api/orders/31d6396e-bd01-4143-aab3-cd4f5c146c58",
+      "request": null,
+      "status": 200,
+      "response": {
+        "id": "31d6396e-bd01-4143-aab3-cd4f5c146c58",
+        "buyerId": "e52f508b-2e34-4307-abd0-61b869d04aa7",
+        "productId": "9c7cc969-b6ab-4677-906b-5f5870fc5de4",
+        "amount": 25.5,
+        "createdAt": "2026-10-29T00:13:12.102940Z",
+        "productTitle": "Week06 HTTP textbook",
+        "status": "PENDING_PAYMENT"
+      }
+    },
+    {
+      "method": "GET",
+      "url": "http://localhost:8103/api/orders",
+      "request": null,
+      "status": 200,
+      "response": [
+        {
+          "id": "23ee8958-4c67-4ed1-807a-49a1d2b2b5b8",
+          "buyerId": "a27d0dc2-e27d-43d7-82cc-19312e65ec06",
+          "productId": "af97aeb8-e49a-44cf-b0d8-138ff743fbec",
+          "amount": 25.5,
+          "createdAt": "2026-10-28T10:24:00.064224Z",
+          "productTitle": "Week06 HTTP textbook",
+          "status": "PENDING_PAYMENT"
+        },
+        {
+          "id": "31d6396e-bd01-4143-aab3-cd4f5c146c58",
+          "buyerId": "e52f508b-2e34-4307-abd0-61b869d04aa7",
+          "productId": "9c7cc969-b6ab-4677-906b-5f5870fc5de4",
+          "amount": 25.5,
+          "createdAt": "2026-10-29T00:13:12.102940Z",
+          "productTitle": "Week06 HTTP textbook",
+          "status": "PENDING_PAYMENT"
+        }
+      ]
+    },
+    {
+      "method": "POST",
+      "url": "http://localhost:8103/api/orders",
+      "request": {
+        "buyerId": "e52f508b-2e34-4307-abd0-61b869d04aa7",
+        "productId": "9c7cc969-b6ab-4677-906b-5f5870fc5de4"
+      },
+      "status": 409,
+      "response": {
+        "detail": "Product already reserved",
+        "instance": "/api/orders",
+        "status": 409,
+        "title": "Conflict"
+      }
+    },
+    {
+      "method": "GET",
+      "url": "http://localhost:8103/api/orders",
+      "request": null,
+      "status": 200,
+      "response": [
+        {
+          "id": "23ee8958-4c67-4ed1-807a-49a1d2b2b5b8",
+          "buyerId": "a27d0dc2-e27d-43d7-82cc-19312e65ec06",
+          "productId": "af97aeb8-e49a-44cf-b0d8-138ff743fbec",
+          "amount": 25.5,
+          "createdAt": "2026-10-28T10:24:00.064224Z",
+          "productTitle": "Week06 HTTP textbook",
+          "status": "PENDING_PAYMENT"
+        },
+        {
+          "id": "31d6396e-bd01-4143-aab3-cd4f5c146c58",
+          "buyerId": "e52f508b-2e34-4307-abd0-61b869d04aa7",
+          "productId": "9c7cc969-b6ab-4677-906b-5f5870fc5de4",
+          "amount": 25.5,
+          "createdAt": "2026-10-29T00:13:12.102940Z",
+          "productTitle": "Week06 HTTP textbook",
+          "status": "PENDING_PAYMENT"
+        }
+      ]
+    },
+    {
+      "method": "POST",
+      "url": "http://localhost:8102/api/products",
+      "request": {
+        "title": "Week06 failure guard",
+        "description": "Must remain available",
+        "price": 12
+      },
+      "status": 201,
+      "response": {
+        "id": "47dd361d-14ec-444b-b63e-d0b92889b1bf",
+        "title": "Week06 failure guard",
+        "description": "Must remain available",
+        "price": 12.0,
+        "status": "AVAILABLE"
+      }
+    },
+    {
+      "method": "POST",
+      "url": "http://localhost:8103/api/orders",
+      "request": {
+        "buyerId": "c5fcdbd4-1e21-4cde-af3e-ef2db4292d39",
+        "productId": "47dd361d-14ec-444b-b63e-d0b92889b1bf"
+      },
+      "status": 404,
+      "response": {
+        "detail": "User not found",
+        "instance": "/api/orders",
+        "status": 404,
+        "title": "Not Found"
+      }
+    },
+    {
+      "method": "GET",
+      "url": "http://localhost:8102/api/products/47dd361d-14ec-444b-b63e-d0b92889b1bf",
+      "request": null,
+      "status": 200,
+      "response": {
+        "id": "47dd361d-14ec-444b-b63e-d0b92889b1bf",
+        "title": "Week06 failure guard",
+        "description": "Must remain available",
+        "price": 12.0,
+        "status": "AVAILABLE"
+      }
+    },
+    {
+      "method": "GET",
+      "url": "http://localhost:8103/api/orders",
+      "request": null,
+      "status": 200,
+      "response": [
+        {
+          "id": "23ee8958-4c67-4ed1-807a-49a1d2b2b5b8",
+          "buyerId": "a27d0dc2-e27d-43d7-82cc-19312e65ec06",
+          "productId": "af97aeb8-e49a-44cf-b0d8-138ff743fbec",
+          "amount": 25.5,
+          "createdAt": "2026-10-28T10:24:00.064224Z",
+          "productTitle": "Week06 HTTP textbook",
+          "status": "PENDING_PAYMENT"
+        },
+        {
+          "id": "31d6396e-bd01-4143-aab3-cd4f5c146c58",
+          "buyerId": "e52f508b-2e34-4307-abd0-61b869d04aa7",
+          "productId": "9c7cc969-b6ab-4677-906b-5f5870fc5de4",
+          "amount": 25.5,
+          "createdAt": "2026-10-29T00:13:12.102940Z",
+          "productTitle": "Week06 HTTP textbook",
+          "status": "PENDING_PAYMENT"
+        }
+      ]
+    },
+    {
+      "method": "POST",
+      "url": "http://localhost:8103/api/orders",
+      "request": {
+        "buyerId": "e52f508b-2e34-4307-abd0-61b869d04aa7",
+        "productId": "408f82cf-2bbb-4052-af41-773041ce39d7"
+      },
+      "status": 404,
+      "response": {
+        "detail": "Product not found",
+        "instance": "/api/orders",
+        "status": 404,
+        "title": "Not Found"
+      }
+    },
+    {
+      "method": "GET",
+      "url": "http://localhost:8103/api/orders",
+      "request": null,
+      "status": 200,
+      "response": [
+        {
+          "id": "23ee8958-4c67-4ed1-807a-49a1d2b2b5b8",
+          "buyerId": "a27d0dc2-e27d-43d7-82cc-19312e65ec06",
+          "productId": "af97aeb8-e49a-44cf-b0d8-138ff743fbec",
+          "amount": 25.5,
+          "createdAt": "2026-10-28T10:24:00.064224Z",
+          "productTitle": "Week06 HTTP textbook",
+          "status": "PENDING_PAYMENT"
+        },
+        {
+          "id": "31d6396e-bd01-4143-aab3-cd4f5c146c58",
+          "buyerId": "e52f508b-2e34-4307-abd0-61b869d04aa7",
+          "productId": "9c7cc969-b6ab-4677-906b-5f5870fc5de4",
+          "amount": 25.5,
+          "createdAt": "2026-10-29T00:13:12.102940Z",
+          "productTitle": "Week06 HTTP textbook",
+          "status": "PENDING_PAYMENT"
+        }
+      ]
+    },
+    {
+      "method": "POST",
+      "url": "http://localhost:8103/api/orders",
+      "request": {
+        "buyerId": "e52f508b-2e34-4307-abd0-61b869d04aa7",
+        "productId": "47dd361d-14ec-444b-b63e-d0b92889b1bf"
+      },
+      "status": 503,
+      "response": {
+        "detail": "Product service unavailable or timed out; order not created",
+        "instance": "/api/orders",
+        "status": 503,
+        "title": "Service Unavailable"
+      }
+    },
+    {
+      "method": "GET",
+      "url": "http://localhost:8103/api/orders",
+      "request": null,
+      "status": 200,
+      "response": [
+        {
+          "id": "23ee8958-4c67-4ed1-807a-49a1d2b2b5b8",
+          "buyerId": "a27d0dc2-e27d-43d7-82cc-19312e65ec06",
+          "productId": "af97aeb8-e49a-44cf-b0d8-138ff743fbec",
+          "amount": 25.5,
+          "createdAt": "2026-10-28T10:24:00.064224Z",
+          "productTitle": "Week06 HTTP textbook",
+          "status": "PENDING_PAYMENT"
+        },
+        {
+          "id": "31d6396e-bd01-4143-aab3-cd4f5c146c58",
+          "buyerId": "e52f508b-2e34-4307-abd0-61b869d04aa7",
+          "productId": "9c7cc969-b6ab-4677-906b-5f5870fc5de4",
+          "amount": 25.5,
+          "createdAt": "2026-10-29T00:13:12.102940Z",
+          "productTitle": "Week06 HTTP textbook",
+          "status": "PENDING_PAYMENT"
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "url": "http://localhost:8102/api/products/47dd361d-14ec-444b-b63e-d0b92889b1bf",
+      "request": null,
+      "status": 200,
+      "response": {
+        "id": "47dd361d-14ec-444b-b63e-d0b92889b1bf",
+        "title": "Week06 failure guard",
+        "description": "Must remain available",
+        "price": 12.0,
+        "status": "AVAILABLE"
+      }
+    }
+  ],
+  "passed": true
+}

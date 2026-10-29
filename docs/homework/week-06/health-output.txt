@@ -1,0 +1,7 @@
+user-service GET http://localhost:8101/actuator/health -> HTTP 200
+{"groups":["liveness","readiness"],"status":"UP"}
+product-service GET http://localhost:8102/actuator/health -> HTTP 200
+{"groups":["liveness","readiness"],"status":"UP"}
+order-service GET http://localhost:8103/actuator/health -> HTTP 200
+{"groups":["liveness","readiness"],"status":"UP"}
+PASS: all three services are healthy
