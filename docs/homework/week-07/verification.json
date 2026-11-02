@@ -1,0 +1,508 @@
+{
+  "verifiedAt": "2026-11-02T15:52:51+0800",
+  "nacosGroup": "PERSONAL_GROUP",
+  "userId": "784efa4c-159a-4f38-99f0-cecb591fe426",
+  "productId": "b61983f2-2648-433e-b4eb-81c4724793a0",
+  "orderId": "97157b70-8869-4bc8-ae15-01670461390b",
+  "failureProductId": "87f78b55-1180-47d9-9885-af96e50a342a",
+  "ordersBefore": 2,
+  "ordersAfter": 3,
+  "dependencyFailure": "HTTP 503, no local order written, product still AVAILABLE",
+  "recovery": "HTTP 201 after user-service re-registered (attempt 1); order written and product RESERVED",
+  "events": [
+    {
+      "method": "GET",
+      "url": "http://localhost:8101/actuator/health",
+      "request": null,
+      "status": 200,
+      "response": {
+        "groups": [
+          "liveness",
+          "readiness"
+        ],
+        "status": "UP"
+      }
+    },
+    {
+      "method": "GET",
+      "url": "http://localhost:8102/actuator/health",
+      "request": null,
+      "status": 200,
+      "response": {
+        "groups": [
+          "liveness",
+          "readiness"
+        ],
+        "status": "UP"
+      }
+    },
+    {
+      "method": "GET",
+      "url": "http://localhost:8103/actuator/health",
+      "request": null,
+      "status": 200,
+      "response": {
+        "groups": [
+          "liveness",
+          "readiness"
+        ],
+        "status": "UP"
+      }
+    },
+    {
+      "method": "POST",
+      "url": "http://localhost:8101/api/users",
+      "request": {
+        "name": "Week07 Nacos Buyer"
+      },
+      "status": 201,
+      "response": {
+        "id": "784efa4c-159a-4f38-99f0-cecb591fe426",
+        "name": "Week07 Nacos Buyer"
+      }
+    },
+    {
+      "method": "POST",
+      "url": "http://localhost:8102/api/products",
+      "request": {
+        "title": "Week07 Nacos textbook",
+        "description": "DiscoveryClient workflow",
+        "price": 25.5
+      },
+      "status": 201,
+      "response": {
+        "id": "b61983f2-2648-433e-b4eb-81c4724793a0",
+        "title": "Week07 Nacos textbook",
+        "description": "DiscoveryClient workflow",
+        "price": 25.5,
+        "status": "AVAILABLE"
+      }
+    },
+    {
+      "method": "GET",
+      "url": "http://localhost:8103/api/orders",
+      "request": null,
+      "status": 200,
+      "response": [
+        {
+          "id": "81b38281-d9c7-4277-b24a-2db668fc0f1f",
+          "buyerId": "bb41a2f4-8d13-4319-b692-6ba1d2d4af43",
+          "productId": "27baedc4-574e-41f2-bd28-94c0d87c325e",
+          "amount": 25.5,
+          "createdAt": "2026-11-02T07:50:31.723257Z",
+          "productTitle": "Week07 Nacos textbook",
+          "status": "PENDING_PAYMENT"
+        },
+        {
+          "id": "bbe136d8-34fb-4fe7-be53-21ac99c5425f",
+          "buyerId": "bb41a2f4-8d13-4319-b692-6ba1d2d4af43",
+          "productId": "a3d08a0b-193a-43b3-8195-8b850a41990f",
+          "amount": 12.0,
+          "createdAt": "2026-11-02T07:51:13.694775Z",
+          "productTitle": "Week07 failure guard",
+          "status": "PENDING_PAYMENT"
+        }
+      ]
+    },
+    {
+      "method": "POST",
+      "url": "http://localhost:8103/api/orders",
+      "request": {
+        "buyerId": "784efa4c-159a-4f38-99f0-cecb591fe426",
+        "productId": "b61983f2-2648-433e-b4eb-81c4724793a0"
+      },
+      "status": 201,
+      "response": {
+        "id": "97157b70-8869-4bc8-ae15-01670461390b",
+        "buyerId": "784efa4c-159a-4f38-99f0-cecb591fe426",
+        "productId": "b61983f2-2648-433e-b4eb-81c4724793a0",
+        "amount": 25.5,
+        "createdAt": "2026-11-02T07:52:05.126442721Z",
+        "productTitle": "Week07 Nacos textbook",
+        "status": "PENDING_PAYMENT"
+      }
+    },
+    {
+      "method": "GET",
+      "url": "http://localhost:8102/api/products/b61983f2-2648-433e-b4eb-81c4724793a0",
+      "request": null,
+      "status": 200,
+      "response": {
+        "id": "b61983f2-2648-433e-b4eb-81c4724793a0",
+        "title": "Week07 Nacos textbook",
+        "description": "DiscoveryClient workflow",
+        "price": 25.5,
+        "status": "RESERVED"
+      }
+    },
+    {
+      "method": "GET",
+      "url": "http://localhost:8103/api/orders/97157b70-8869-4bc8-ae15-01670461390b",
+      "request": null,
+      "status": 200,
+      "response": {
+        "id": "97157b70-8869-4bc8-ae15-01670461390b",
+        "buyerId": "784efa4c-159a-4f38-99f0-cecb591fe426",
+        "productId": "b61983f2-2648-433e-b4eb-81c4724793a0",
+        "amount": 25.5,
+        "createdAt": "2026-11-02T07:52:05.126443Z",
+        "productTitle": "Week07 Nacos textbook",
+        "status": "PENDING_PAYMENT"
+      }
+    },
+    {
+      "method": "GET",
+      "url": "http://localhost:8103/api/orders",
+      "request": null,
+      "status": 200,
+      "response": [
+        {
+          "id": "81b38281-d9c7-4277-b24a-2db668fc0f1f",
+          "buyerId": "bb41a2f4-8d13-4319-b692-6ba1d2d4af43",
+          "productId": "27baedc4-574e-41f2-bd28-94c0d87c325e",
+          "amount": 25.5,
+          "createdAt": "2026-11-02T07:50:31.723257Z",
+          "productTitle": "Week07 Nacos textbook",
+          "status": "PENDING_PAYMENT"
+        },
+        {
+          "id": "97157b70-8869-4bc8-ae15-01670461390b",
+          "buyerId": "784efa4c-159a-4f38-99f0-cecb591fe426",
+          "productId": "b61983f2-2648-433e-b4eb-81c4724793a0",
+          "amount": 25.5,
+          "createdAt": "2026-11-02T07:52:05.126443Z",
+          "productTitle": "Week07 Nacos textbook",
+          "status": "PENDING_PAYMENT"
+        },
+        {
+          "id": "bbe136d8-34fb-4fe7-be53-21ac99c5425f",
+          "buyerId": "bb41a2f4-8d13-4319-b692-6ba1d2d4af43",
+          "productId": "a3d08a0b-193a-43b3-8195-8b850a41990f",
+          "amount": 12.0,
+          "createdAt": "2026-11-02T07:51:13.694775Z",
+          "productTitle": "Week07 failure guard",
+          "status": "PENDING_PAYMENT"
+        }
+      ]
+    },
+    {
+      "method": "POST",
+      "url": "http://localhost:8103/api/orders",
+      "request": {
+        "buyerId": "784efa4c-159a-4f38-99f0-cecb591fe426",
+        "productId": "b61983f2-2648-433e-b4eb-81c4724793a0"
+      },
+      "status": 409,
+      "response": {
+        "detail": "Product already reserved",
+        "instance": "/api/orders",
+        "status": 409,
+        "title": "Conflict"
+      }
+    },
+    {
+      "method": "GET",
+      "url": "http://localhost:8103/api/orders",
+      "request": null,
+      "status": 200,
+      "response": [
+        {
+          "id": "81b38281-d9c7-4277-b24a-2db668fc0f1f",
+          "buyerId": "bb41a2f4-8d13-4319-b692-6ba1d2d4af43",
+          "productId": "27baedc4-574e-41f2-bd28-94c0d87c325e",
+          "amount": 25.5,
+          "createdAt": "2026-11-02T07:50:31.723257Z",
+          "productTitle": "Week07 Nacos textbook",
+          "status": "PENDING_PAYMENT"
+        },
+        {
+          "id": "97157b70-8869-4bc8-ae15-01670461390b",
+          "buyerId": "784efa4c-159a-4f38-99f0-cecb591fe426",
+          "productId": "b61983f2-2648-433e-b4eb-81c4724793a0",
+          "amount": 25.5,
+          "createdAt": "2026-11-02T07:52:05.126443Z",
+          "productTitle": "Week07 Nacos textbook",
+          "status": "PENDING_PAYMENT"
+        },
+        {
+          "id": "bbe136d8-34fb-4fe7-be53-21ac99c5425f",
+          "buyerId": "bb41a2f4-8d13-4319-b692-6ba1d2d4af43",
+          "productId": "a3d08a0b-193a-43b3-8195-8b850a41990f",
+          "amount": 12.0,
+          "createdAt": "2026-11-02T07:51:13.694775Z",
+          "productTitle": "Week07 failure guard",
+          "status": "PENDING_PAYMENT"
+        }
+      ]
+    },
+    {
+      "method": "POST",
+      "url": "http://localhost:8102/api/products",
+      "request": {
+        "title": "Week07 failure guard",
+        "description": "Must remain available",
+        "price": 12
+      },
+      "status": 201,
+      "response": {
+        "id": "87f78b55-1180-47d9-9885-af96e50a342a",
+        "title": "Week07 failure guard",
+        "description": "Must remain available",
+        "price": 12.0,
+        "status": "AVAILABLE"
+      }
+    },
+    {
+      "method": "POST",
+      "url": "http://localhost:8103/api/orders",
+      "request": {
+        "buyerId": "882ea79e-5da4-4226-a81f-bb8c0e482c0e",
+        "productId": "87f78b55-1180-47d9-9885-af96e50a342a"
+      },
+      "status": 404,
+      "response": {
+        "detail": "User not found",
+        "instance": "/api/orders",
+        "status": 404,
+        "title": "Not Found"
+      }
+    },
+    {
+      "method": "GET",
+      "url": "http://localhost:8102/api/products/87f78b55-1180-47d9-9885-af96e50a342a",
+      "request": null,
+      "status": 200,
+      "response": {
+        "id": "87f78b55-1180-47d9-9885-af96e50a342a",
+        "title": "Week07 failure guard",
+        "description": "Must remain available",
+        "price": 12.0,
+        "status": "AVAILABLE"
+      }
+    },
+    {
+      "method": "GET",
+      "url": "http://localhost:8103/api/orders",
+      "request": null,
+      "status": 200,
+      "response": [
+        {
+          "id": "81b38281-d9c7-4277-b24a-2db668fc0f1f",
+          "buyerId": "bb41a2f4-8d13-4319-b692-6ba1d2d4af43",
+          "productId": "27baedc4-574e-41f2-bd28-94c0d87c325e",
+          "amount": 25.5,
+          "createdAt": "2026-11-02T07:50:31.723257Z",
+          "productTitle": "Week07 Nacos textbook",
+          "status": "PENDING_PAYMENT"
+        },
+        {
+          "id": "97157b70-8869-4bc8-ae15-01670461390b",
+          "buyerId": "784efa4c-159a-4f38-99f0-cecb591fe426",
+          "productId": "b61983f2-2648-433e-b4eb-81c4724793a0",
+          "amount": 25.5,
+          "createdAt": "2026-11-02T07:52:05.126443Z",
+          "productTitle": "Week07 Nacos textbook",
+          "status": "PENDING_PAYMENT"
+        },
+        {
+          "id": "bbe136d8-34fb-4fe7-be53-21ac99c5425f",
+          "buyerId": "bb41a2f4-8d13-4319-b692-6ba1d2d4af43",
+          "productId": "a3d08a0b-193a-43b3-8195-8b850a41990f",
+          "amount": 12.0,
+          "createdAt": "2026-11-02T07:51:13.694775Z",
+          "productTitle": "Week07 failure guard",
+          "status": "PENDING_PAYMENT"
+        }
+      ]
+    },
+    {
+      "method": "POST",
+      "url": "http://localhost:8103/api/orders",
+      "request": {
+        "buyerId": "784efa4c-159a-4f38-99f0-cecb591fe426",
+        "productId": "a6eb1d1e-f9ab-4465-80fb-c877d15776e1"
+      },
+      "status": 404,
+      "response": {
+        "detail": "Product not found",
+        "instance": "/api/orders",
+        "status": 404,
+        "title": "Not Found"
+      }
+    },
+    {
+      "method": "GET",
+      "url": "http://localhost:8103/api/orders",
+      "request": null,
+      "status": 200,
+      "response": [
+        {
+          "id": "81b38281-d9c7-4277-b24a-2db668fc0f1f",
+          "buyerId": "bb41a2f4-8d13-4319-b692-6ba1d2d4af43",
+          "productId": "27baedc4-574e-41f2-bd28-94c0d87c325e",
+          "amount": 25.5,
+          "createdAt": "2026-11-02T07:50:31.723257Z",
+          "productTitle": "Week07 Nacos textbook",
+          "status": "PENDING_PAYMENT"
+        },
+        {
+          "id": "97157b70-8869-4bc8-ae15-01670461390b",
+          "buyerId": "784efa4c-159a-4f38-99f0-cecb591fe426",
+          "productId": "b61983f2-2648-433e-b4eb-81c4724793a0",
+          "amount": 25.5,
+          "createdAt": "2026-11-02T07:52:05.126443Z",
+          "productTitle": "Week07 Nacos textbook",
+          "status": "PENDING_PAYMENT"
+        },
+        {
+          "id": "bbe136d8-34fb-4fe7-be53-21ac99c5425f",
+          "buyerId": "bb41a2f4-8d13-4319-b692-6ba1d2d4af43",
+          "productId": "a3d08a0b-193a-43b3-8195-8b850a41990f",
+          "amount": 12.0,
+          "createdAt": "2026-11-02T07:51:13.694775Z",
+          "productTitle": "Week07 failure guard",
+          "status": "PENDING_PAYMENT"
+        }
+      ]
+    },
+    {
+      "method": "POST",
+      "url": "http://localhost:8103/api/orders",
+      "request": {
+        "buyerId": "784efa4c-159a-4f38-99f0-cecb591fe426",
+        "productId": "87f78b55-1180-47d9-9885-af96e50a342a"
+      },
+      "status": 503,
+      "response": {
+        "detail": "No available instance: user-service",
+        "instance": "/api/orders",
+        "status": 503,
+        "title": "Service Unavailable"
+      }
+    },
+    {
+      "method": "GET",
+      "url": "http://localhost:8103/api/orders",
+      "request": null,
+      "status": 200,
+      "response": [
+        {
+          "id": "81b38281-d9c7-4277-b24a-2db668fc0f1f",
+          "buyerId": "bb41a2f4-8d13-4319-b692-6ba1d2d4af43",
+          "productId": "27baedc4-574e-41f2-bd28-94c0d87c325e",
+          "amount": 25.5,
+          "createdAt": "2026-11-02T07:50:31.723257Z",
+          "productTitle": "Week07 Nacos textbook",
+          "status": "PENDING_PAYMENT"
+        },
+        {
+          "id": "97157b70-8869-4bc8-ae15-01670461390b",
+          "buyerId": "784efa4c-159a-4f38-99f0-cecb591fe426",
+          "productId": "b61983f2-2648-433e-b4eb-81c4724793a0",
+          "amount": 25.5,
+          "createdAt": "2026-11-02T07:52:05.126443Z",
+          "productTitle": "Week07 Nacos textbook",
+          "status": "PENDING_PAYMENT"
+        },
+        {
+          "id": "bbe136d8-34fb-4fe7-be53-21ac99c5425f",
+          "buyerId": "bb41a2f4-8d13-4319-b692-6ba1d2d4af43",
+          "productId": "a3d08a0b-193a-43b3-8195-8b850a41990f",
+          "amount": 12.0,
+          "createdAt": "2026-11-02T07:51:13.694775Z",
+          "productTitle": "Week07 failure guard",
+          "status": "PENDING_PAYMENT"
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "url": "http://localhost:8102/api/products/87f78b55-1180-47d9-9885-af96e50a342a",
+      "request": null,
+      "status": 200,
+      "response": {
+        "id": "87f78b55-1180-47d9-9885-af96e50a342a",
+        "title": "Week07 failure guard",
+        "description": "Must remain available",
+        "price": 12.0,
+        "status": "AVAILABLE"
+      }
+    },
+    {
+      "method": "POST",
+      "url": "http://localhost:8103/api/orders",
+      "request": {
+        "buyerId": "784efa4c-159a-4f38-99f0-cecb591fe426",
+        "productId": "87f78b55-1180-47d9-9885-af96e50a342a"
+      },
+      "status": 201,
+      "response": {
+        "id": "31ee20b9-d11e-4246-b2db-078948af5db7",
+        "buyerId": "784efa4c-159a-4f38-99f0-cecb591fe426",
+        "productId": "87f78b55-1180-47d9-9885-af96e50a342a",
+        "amount": 12.0,
+        "createdAt": "2026-11-02T07:52:46.953614413Z",
+        "productTitle": "Week07 failure guard",
+        "status": "PENDING_PAYMENT"
+      }
+    },
+    {
+      "method": "GET",
+      "url": "http://localhost:8102/api/products/87f78b55-1180-47d9-9885-af96e50a342a",
+      "request": null,
+      "status": 200,
+      "response": {
+        "id": "87f78b55-1180-47d9-9885-af96e50a342a",
+        "title": "Week07 failure guard",
+        "description": "Must remain available",
+        "price": 12.0,
+        "status": "RESERVED"
+      }
+    },
+    {
+      "method": "GET",
+      "url": "http://localhost:8103/api/orders",
+      "request": null,
+      "status": 200,
+      "response": [
+        {
+          "id": "31ee20b9-d11e-4246-b2db-078948af5db7",
+          "buyerId": "784efa4c-159a-4f38-99f0-cecb591fe426",
+          "productId": "87f78b55-1180-47d9-9885-af96e50a342a",
+          "amount": 12.0,
+          "createdAt": "2026-11-02T07:52:46.953614Z",
+          "productTitle": "Week07 failure guard",
+          "status": "PENDING_PAYMENT"
+        },
+        {
+          "id": "81b38281-d9c7-4277-b24a-2db668fc0f1f",
+          "buyerId": "bb41a2f4-8d13-4319-b692-6ba1d2d4af43",
+          "productId": "27baedc4-574e-41f2-bd28-94c0d87c325e",
+          "amount": 25.5,
+          "createdAt": "2026-11-02T07:50:31.723257Z",
+          "productTitle": "Week07 Nacos textbook",
+          "status": "PENDING_PAYMENT"
+        },
+        {
+          "id": "97157b70-8869-4bc8-ae15-01670461390b",
+          "buyerId": "784efa4c-159a-4f38-99f0-cecb591fe426",
+          "productId": "b61983f2-2648-433e-b4eb-81c4724793a0",
+          "amount": 25.5,
+          "createdAt": "2026-11-02T07:52:05.126443Z",
+          "productTitle": "Week07 Nacos textbook",
+          "status": "PENDING_PAYMENT"
+        },
+        {
+          "id": "bbe136d8-34fb-4fe7-be53-21ac99c5425f",
+          "buyerId": "bb41a2f4-8d13-4319-b692-6ba1d2d4af43",
+          "productId": "a3d08a0b-193a-43b3-8195-8b850a41990f",
+          "amount": 12.0,
+          "createdAt": "2026-11-02T07:51:13.694775Z",
+          "productTitle": "Week07 failure guard",
+          "status": "PENDING_PAYMENT"
+        }
+      ]
+    }
+  ],
+  "passed": true
+}

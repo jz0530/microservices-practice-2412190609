@@ -40,7 +40,7 @@ flowchart LR
 
 创建用户和商品后，客户端向订单服务提交 buyerId、productId。订单服务依次 GET 用户、POST 商品占用，然后写入本地订单，返回 201。商品变为 RESERVED，订单为 PENDING_PAYMENT。金额由商品服务返回，不采信客户端金额。
 
-RestTemplate 的地址写在 order-service 的 application.yml，通过 USER_SERVICE_URL、PRODUCT_SERVICE_URL 覆盖。连接超时默认 2000ms，读取超时默认 3000ms，可用 HTTP_CONNECT_TIMEOUT_MS、HTTP_READ_TIMEOUT_MS 覆盖。容器内使用 user-service:8080 和 product-service:8080，不使用 localhost 调用其他容器。
+第六周时 RestTemplate 的地址写在 order-service 的 application.yml，通过 USER_SERVICE_URL、PRODUCT_SERVICE_URL 覆盖；第七周已删除这两个固定地址，改为每次向 Nacos 的 `user-service`、`product-service` 查询实例。连接超时默认 2000ms，读取超时默认 3000ms，可用 HTTP_CONNECT_TIMEOUT_MS、HTTP_READ_TIMEOUT_MS 覆盖。
 
 无效输入返回 400；依赖资源不存在返回 404；商品已占用返回 409；依赖连接失败、读取超时或服务异常返回 503；无效远端响应返回 502。依赖校验失败不会继续写入本地订单。
 
@@ -55,3 +55,46 @@ RestTemplate 的地址写在 order-service 的 application.yml，通过 USER_SER
 根目录 compose.yaml 使用项目名 cyy-trade-week06，包含三个应用和三个 MySQL 8.4.11 容器。每个应用等待自己的数据库健康；跨服务可用性由健康检查脚本验证。应用共用 service-network，各数据库仅加入所属的 user-db/product-db/order-db 网络。
 
 命名卷 user-data/product-data/order-data 保存数据。实际密码放在被 Git 忽略的 .env，模板 .env.example 仅提供占位值。旧 compose 保存为 compose.monolith.yaml，保留旧项目名与数据卷，不覆盖 monolith 或迁移旧数据。
+
+## 第七周：Nacos 服务注册与发现
+
+第七周保留第六周的服务边界、接口、数据库归属和业务规则，只把 order-service 对 user-service、product-service 的固定地址调用改为服务发现。
+
+### Nacos 编排与隔离
+
+根目录 compose.yaml 增加 `nacos/nacos-server:v3.2.4`，使用 standalone 模式、鉴权和命名卷 `nacos-data`。实际密码、Token、Server identity 只放在本地 .env；.env.example 只保留占位值。
+
+| 用途 | 容器内端口 | 宿主机端口 |
+| --- | --- | --- |
+| 控制台 | 8080 | 18080 |
+| 服务端 HTTP | 8848 | 8848 |
+| SDK gRPC | 9848 | 9848 |
+
+三个服务使用同一命名空间 `public` 和明确的分组 `PERSONAL_GROUP`，与课堂项目的 `COURSE_GROUP` 隔离。服务名与第六周保持一致：
+
+- user-service
+- product-service
+- order-service
+
+### 服务发现调用
+
+order-service 的 TradeClient 注入 DiscoveryClient，每次下单时：
+
+1. `discovery.getInstances("user-service")` 取当前实例；
+2. 使用 `instances.getFirst().getUri()` 加 `/api/users/{id}` 发起真实 HTTP 请求；
+3. `discovery.getInstances("product-service")` 取当前实例；
+4. 使用实例 URI 加 `/api/products/{id}/reservations` 占用商品；
+5. 两步都成功后写本地订单。
+
+地址不在启动时缓存，实例列表变化后下一次请求会重新寻址。实例列表为空时返回 503，并明确写出 `No available instance: <服务名>`；不会绕过校验继续写订单。依赖不存在仍返回 404，商品已占用仍返回 409，连接失败或读取超时返回 503。
+
+### 失败与健康边界
+
+- 停止 user-service 后，Nacos 实例列表会随后变化；在旧地址仍被缓存或连接被拒绝的短暂窗口内，order-service 返回 503，订单数不增加，商品保持 AVAILABLE。
+- 恢复 user-service 并等待重新注册后，下一次下单返回 201。
+- Nacos SDK 连接存活、Nacos 实例 healthy、Actuator `/actuator/health` 是三种不同状态。Actuator 返回 DOWN 不会自动让 Nacos 摘除实例；本周不声称已实现自动摘除。
+- 服务发现不消除“商品占用成功、订单本地保存失败”的跨服务事务窗口；本周仍不实现分布式事务、自动补偿、重试或熔断。
+
+### 测试边界
+
+三个服务的测试均关闭 Nacos 自动注册，不连接真实 Nacos 或 MySQL。order-service 使用模拟 DiscoveryClient 返回本地 HTTP 测试服务实例，覆盖成功、空实例 503、实例列表变化后重新寻址、用户/商品 404、商品 409、连接失败和读取超时，并断言失败场景订单数不变。

@@ -1,0 +1,4 @@
+Nacos console: http://localhost:18080 | namespace=public | group=PERSONAL_GROUP
+user-service: 172.27.0.7:8080 healthy=True enabled=True
+product-service: 172.27.0.8:8080 healthy=True enabled=True
+order-service: 172.27.0.6:8080 healthy=True enabled=True

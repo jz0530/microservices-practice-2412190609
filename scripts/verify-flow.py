@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Real HTTP workflow verification. --dependency-failure briefly stops product-service and restores it."""
+"""Week 07 real HTTP workflow. --dependency-failure briefly stops user-service and restores it."""
 import argparse, json, os, subprocess, time, uuid
 from pathlib import Path
 from urllib.request import Request, urlopen
@@ -8,7 +8,7 @@ from urllib.error import HTTPError, URLError
 root = Path(__file__).resolve().parents[1]
 parser = argparse.ArgumentParser()
 parser.add_argument('--dependency-failure', action='store_true')
-parser.add_argument('--output', default='docs/homework/week-06/verification.json')
+parser.add_argument('--output', default='docs/homework/week-07/verification.json')
 args = parser.parse_args()
 urls = {name: os.environ.get(name.upper()+'_SERVICE_URL', 'http://localhost:'+str(port)).rstrip('/')
         for name, port in [('user',8101),('product',8102),('order',8103)]}
@@ -30,6 +30,17 @@ def request(service, path, body=None, expected=200):
     assert status == expected, (expected,status,payload)
     return payload
 
+def request_with_retry(service, path, body, expected, attempts=20):
+    """Nacos client caches can need a few seconds after first registration."""
+    for attempt in range(attempts):
+        try:
+            return request(service, path, body, expected)
+        except AssertionError:
+            if attempt == attempts - 1:
+                raise
+            time.sleep(2)
+
+
 def wait(service):
     for _ in range(60):
         try:
@@ -45,10 +56,10 @@ def compose(*cmd):
 for service in urls:
     wait(service)
     assert request(service,'/actuator/health')['status']=='UP'
-user = request('user','/api/users',{'name':'Week06 Alice'},201)
-product = request('product','/api/products',{'title':'Week06 HTTP textbook','description':'Three-service workflow','price':25.50},201)
+user = request('user','/api/users',{'name':'Week07 Nacos Buyer'},201)
+product = request('product','/api/products',{'title':'Week07 Nacos textbook','description':'DiscoveryClient workflow','price':25.50},201)
 orders_before = request('order','/api/orders')
-order = request('order','/api/orders',{'buyerId':user['id'],'productId':product['id']},201)
+order = request_with_retry('order','/api/orders',{'buyerId':user['id'],'productId':product['id']},201)
 assert order['buyerId']==user['id'] and order['productId']==product['id'] and order['amount']==25.5
 assert order['status']=='PENDING_PAYMENT'
 assert request('product','/api/products/'+product['id'])['status']=='RESERVED'
@@ -57,27 +68,41 @@ orders_success = request('order','/api/orders')
 assert len(orders_success)==len(orders_before)+1
 request('order','/api/orders',{'buyerId':user['id'],'productId':product['id']},409)
 assert len(request('order','/api/orders'))==len(orders_success)
-fresh = request('product','/api/products',{'title':'Week06 failure guard','description':'Must remain available','price':12},201)
+fresh = request('product','/api/products',{'title':'Week07 failure guard','description':'Must remain available','price':12},201)
 request('order','/api/orders',{'buyerId':str(uuid.uuid4()),'productId':fresh['id']},404)
 assert request('product','/api/products/'+fresh['id'])['status']=='AVAILABLE'
 assert len(request('order','/api/orders'))==len(orders_success)
 request('order','/api/orders',{'buyerId':user['id'],'productId':str(uuid.uuid4())},404)
 assert len(request('order','/api/orders'))==len(orders_success)
 failure = 'not requested'
+recovery = 'not requested'
 if args.dependency_failure:
     try:
-        compose('stop','product-service')
+        compose('stop','user-service')
         request('order','/api/orders',{'buyerId':user['id'],'productId':fresh['id']},503)
         assert len(request('order','/api/orders'))==len(orders_success)
-        failure = 'HTTP 503, no local order written'
+        assert request('product','/api/products/'+fresh['id'])['status']=='AVAILABLE'
+        failure = 'HTTP 503, no local order written, product still AVAILABLE'
     finally:
-        compose('start','product-service')
-        wait('product')
-    assert request('product','/api/products/'+fresh['id'])['status']=='AVAILABLE'
-result = {'verifiedAt':time.strftime('%Y-%m-%dT%H:%M:%S%z'),'userId':user['id'],
-          'productId':product['id'],'orderId':order['id'],'failureProductId':fresh['id'],
-          'ordersBefore':len(orders_before),'ordersAfter':len(orders_success),
-          'dependencyFailure':failure,'events':events,'passed':True}
+        compose('start','user-service')
+        wait('user')
+    for attempt in range(20):
+        try:
+            recovered = request('order','/api/orders',{'buyerId':user['id'],'productId':fresh['id']},201)
+            recovery = f'HTTP 201 after user-service re-registered (attempt {attempt+1})'
+            break
+        except AssertionError:
+            if attempt == 19:
+                raise
+            time.sleep(2)
+    assert request('product','/api/products/'+fresh['id'])['status']=='RESERVED'
+    assert len(request('order','/api/orders'))==len(orders_success)+1
+    recovery += '; order written and product RESERVED'
+result = {'verifiedAt':time.strftime('%Y-%m-%dT%H:%M:%S%z'),'nacosGroup':'PERSONAL_GROUP',
+          'userId':user['id'],'productId':product['id'],'orderId':order['id'],
+          'failureProductId':fresh['id'],'ordersBefore':len(orders_before),
+          'ordersAfter':len(orders_success),'dependencyFailure':failure,
+          'recovery':recovery,'events':events,'passed':True}
 output = Path(args.output)
 if not output.is_absolute():output=root/output
 output.parent.mkdir(parents=True,exist_ok=True)

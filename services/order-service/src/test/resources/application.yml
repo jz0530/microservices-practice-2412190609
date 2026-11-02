@@ -1,4 +1,11 @@
 spring:
+  cloud:
+    nacos:
+      discovery:
+        enabled: false
+    service-registry:
+      auto-registration:
+        enabled: false
   datasource:
     url: jdbc:h2:mem:order_test;DB_CLOSE_DELAY=-1
     username: sa
@@ -9,7 +16,5 @@ spring:
       ddl-auto: create-drop
     open-in-view: false
 clients:
-  user-url: http://localhost:1
-  product-url: http://localhost:1
   connect-timeout-ms: 300
   read-timeout-ms: 300

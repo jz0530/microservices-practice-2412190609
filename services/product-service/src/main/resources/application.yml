@@ -3,6 +3,13 @@ server:
 spring:
   application:
     name: product-service
+  cloud:
+    nacos:
+      discovery:
+        server-addr: ${NACOS_SERVER_ADDR:localhost:8848}
+        username: ${NACOS_USERNAME:nacos}
+        password: ${NACOS_PASSWORD:}
+        group: PERSONAL_GROUP
   datasource:
     url: ${DB_URL:jdbc:mysql://localhost:3306/trade_product?connectionTimeZone=UTC}
     username: ${DB_USER:trade_product}

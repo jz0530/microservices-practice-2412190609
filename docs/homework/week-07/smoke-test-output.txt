@@ -1,0 +1,71 @@
+Nacos console http://localhost:18080/ -> HTTP 200
+user-service GET http://localhost:8101/actuator/health -> HTTP 200
+{"groups":["liveness","readiness"],"status":"UP"}
+product-service GET http://localhost:8102/actuator/health -> HTTP 200
+{"groups":["liveness","readiness"],"status":"UP"}
+order-service GET http://localhost:8103/actuator/health -> HTTP 200
+{"groups":["liveness","readiness"],"status":"UP"}
+GET http://localhost:8101/actuator/health -> HTTP 200
+{"groups": ["liveness", "readiness"], "status": "UP"}
+GET http://localhost:8102/actuator/health -> HTTP 200
+{"groups": ["liveness", "readiness"], "status": "UP"}
+GET http://localhost:8103/actuator/health -> HTTP 200
+{"groups": ["liveness", "readiness"], "status": "UP"}
+POST http://localhost:8101/api/users -> HTTP 201
+{"id": "784efa4c-159a-4f38-99f0-cecb591fe426", "name": "Week07 Nacos Buyer"}
+POST http://localhost:8102/api/products -> HTTP 201
+{"id": "b61983f2-2648-433e-b4eb-81c4724793a0", "title": "Week07 Nacos textbook", "description": "DiscoveryClient workflow", "price": 25.5, "status": "AVAILABLE"}
+GET http://localhost:8103/api/orders -> HTTP 200
+[{"id": "81b38281-d9c7-4277-b24a-2db668fc0f1f", "buyerId": "bb41a2f4-8d13-4319-b692-6ba1d2d4af43", "productId": "27baedc4-574e-41f2-bd28-94c0d87c325e", "amount": 25.5, "createdAt": "2026-11-02T07:50:31.723257Z", "productTitle": "Week07 Nacos textbook", "status": "PENDING_PAYMENT"}, {"id": "bbe136d8-34fb-4fe7-be53-21ac99c5425f", "buyerId": "bb41a2f4-8d13-4319-b692-6ba1d2d4af43", "productId": "a3d08a0b-193a-43b3-8195-8b850a41990f", "amount": 12.0, "createdAt": "2026-11-02T07:51:13.694775Z", "productTitle": "Week07 failure guard", "status": "PENDING_PAYMENT"}]
+POST http://localhost:8103/api/orders -> HTTP 201
+{"id": "97157b70-8869-4bc8-ae15-01670461390b", "buyerId": "784efa4c-159a-4f38-99f0-cecb591fe426", "productId": "b61983f2-2648-433e-b4eb-81c4724793a0", "amount": 25.5, "createdAt": "2026-11-02T07:52:05.126442721Z", "productTitle": "Week07 Nacos textbook", "status": "PENDING_PAYMENT"}
+GET http://localhost:8102/api/products/b61983f2-2648-433e-b4eb-81c4724793a0 -> HTTP 200
+{"id": "b61983f2-2648-433e-b4eb-81c4724793a0", "title": "Week07 Nacos textbook", "description": "DiscoveryClient workflow", "price": 25.5, "status": "RESERVED"}
+GET http://localhost:8103/api/orders/97157b70-8869-4bc8-ae15-01670461390b -> HTTP 200
+{"id": "97157b70-8869-4bc8-ae15-01670461390b", "buyerId": "784efa4c-159a-4f38-99f0-cecb591fe426", "productId": "b61983f2-2648-433e-b4eb-81c4724793a0", "amount": 25.5, "createdAt": "2026-11-02T07:52:05.126443Z", "productTitle": "Week07 Nacos textbook", "status": "PENDING_PAYMENT"}
+GET http://localhost:8103/api/orders -> HTTP 200
+[{"id": "81b38281-d9c7-4277-b24a-2db668fc0f1f", "buyerId": "bb41a2f4-8d13-4319-b692-6ba1d2d4af43", "productId": "27baedc4-574e-41f2-bd28-94c0d87c325e", "amount": 25.5, "createdAt": "2026-11-02T07:50:31.723257Z", "productTitle": "Week07 Nacos textbook", "status": "PENDING_PAYMENT"}, {"id": "97157b70-8869-4bc8-ae15-01670461390b", "buyerId": "784efa4c-159a-4f38-99f0-cecb591fe426", "productId": "b61983f2-2648-433e-b4eb-81c4724793a0", "amount": 25.5, "createdAt": "2026-11-02T07:52:05.126443Z", "productTitle": "Week07 Nacos textbook", "status": "PENDING_PAYMENT"}, {"id": "bbe136d8-34fb-4fe7-be53-21ac99c5425f", "buyerId": "bb41a2f4-8d13-4319-b692-6ba1d2d4af43", "productId": "a3d08a0b-193a-43b3-8195-8b850a41990f", "amount": 12.0, "createdAt": "2026-11-02T07:51:13.694775Z", "productTitle": "Week07 failure guard", "status": "PENDING_PAYMENT"}]
+POST http://localhost:8103/api/orders -> HTTP 409
+{"detail": "Product already reserved", "instance": "/api/orders", "status": 409, "title": "Conflict"}
+GET http://localhost:8103/api/orders -> HTTP 200
+[{"id": "81b38281-d9c7-4277-b24a-2db668fc0f1f", "buyerId": "bb41a2f4-8d13-4319-b692-6ba1d2d4af43", "productId": "27baedc4-574e-41f2-bd28-94c0d87c325e", "amount": 25.5, "createdAt": "2026-11-02T07:50:31.723257Z", "productTitle": "Week07 Nacos textbook", "status": "PENDING_PAYMENT"}, {"id": "97157b70-8869-4bc8-ae15-01670461390b", "buyerId": "784efa4c-159a-4f38-99f0-cecb591fe426", "productId": "b61983f2-2648-433e-b4eb-81c4724793a0", "amount": 25.5, "createdAt": "2026-11-02T07:52:05.126443Z", "productTitle": "Week07 Nacos textbook", "status": "PENDING_PAYMENT"}, {"id": "bbe136d8-34fb-4fe7-be53-21ac99c5425f", "buyerId": "bb41a2f4-8d13-4319-b692-6ba1d2d4af43", "productId": "a3d08a0b-193a-43b3-8195-8b850a41990f", "amount": 12.0, "createdAt": "2026-11-02T07:51:13.694775Z", "productTitle": "Week07 failure guard", "status": "PENDING_PAYMENT"}]
+POST http://localhost:8102/api/products -> HTTP 201
+{"id": "87f78b55-1180-47d9-9885-af96e50a342a", "title": "Week07 failure guard", "description": "Must remain available", "price": 12.0, "status": "AVAILABLE"}
+POST http://localhost:8103/api/orders -> HTTP 404
+{"detail": "User not found", "instance": "/api/orders", "status": 404, "title": "Not Found"}
+GET http://localhost:8102/api/products/87f78b55-1180-47d9-9885-af96e50a342a -> HTTP 200
+{"id": "87f78b55-1180-47d9-9885-af96e50a342a", "title": "Week07 failure guard", "description": "Must remain available", "price": 12.0, "status": "AVAILABLE"}
+GET http://localhost:8103/api/orders -> HTTP 200
+[{"id": "81b38281-d9c7-4277-b24a-2db668fc0f1f", "buyerId": "bb41a2f4-8d13-4319-b692-6ba1d2d4af43", "productId": "27baedc4-574e-41f2-bd28-94c0d87c325e", "amount": 25.5, "createdAt": "2026-11-02T07:50:31.723257Z", "productTitle": "Week07 Nacos textbook", "status": "PENDING_PAYMENT"}, {"id": "97157b70-8869-4bc8-ae15-01670461390b", "buyerId": "784efa4c-159a-4f38-99f0-cecb591fe426", "productId": "b61983f2-2648-433e-b4eb-81c4724793a0", "amount": 25.5, "createdAt": "2026-11-02T07:52:05.126443Z", "productTitle": "Week07 Nacos textbook", "status": "PENDING_PAYMENT"}, {"id": "bbe136d8-34fb-4fe7-be53-21ac99c5425f", "buyerId": "bb41a2f4-8d13-4319-b692-6ba1d2d4af43", "productId": "a3d08a0b-193a-43b3-8195-8b850a41990f", "amount": 12.0, "createdAt": "2026-11-02T07:51:13.694775Z", "productTitle": "Week07 failure guard", "status": "PENDING_PAYMENT"}]
+POST http://localhost:8103/api/orders -> HTTP 404
+{"detail": "Product not found", "instance": "/api/orders", "status": 404, "title": "Not Found"}
+GET http://localhost:8103/api/orders -> HTTP 200
+[{"id": "81b38281-d9c7-4277-b24a-2db668fc0f1f", "buyerId": "bb41a2f4-8d13-4319-b692-6ba1d2d4af43", "productId": "27baedc4-574e-41f2-bd28-94c0d87c325e", "amount": 25.5, "createdAt": "2026-11-02T07:50:31.723257Z", "productTitle": "Week07 Nacos textbook", "status": "PENDING_PAYMENT"}, {"id": "97157b70-8869-4bc8-ae15-01670461390b", "buyerId": "784efa4c-159a-4f38-99f0-cecb591fe426", "productId": "b61983f2-2648-433e-b4eb-81c4724793a0", "amount": 25.5, "createdAt": "2026-11-02T07:52:05.126443Z", "productTitle": "Week07 Nacos textbook", "status": "PENDING_PAYMENT"}, {"id": "bbe136d8-34fb-4fe7-be53-21ac99c5425f", "buyerId": "bb41a2f4-8d13-4319-b692-6ba1d2d4af43", "productId": "a3d08a0b-193a-43b3-8195-8b850a41990f", "amount": 12.0, "createdAt": "2026-11-02T07:51:13.694775Z", "productTitle": "Week07 failure guard", "status": "PENDING_PAYMENT"}]
+bash.exe :  Container cyy-trade-week07-user-service-1 Stopping 
+所在位置 行:1 字符: 503
++ ... \bash.exe'; & $b scripts/smoke-test.sh > 'D:\codexwork\week07-work\sm ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ( Container cyy-...ice-1 Stopping :String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+ Container cyy-trade-week07-user-service-1 Stopped 
+POST http://localhost:8103/api/orders -> HTTP 503
+{"detail": "No available instance: user-service", "instance": "/api/orders", "status": 503, "title": "Service Unavailable"}
+GET http://localhost:8103/api/orders -> HTTP 200
+[{"id": "81b38281-d9c7-4277-b24a-2db668fc0f1f", "buyerId": "bb41a2f4-8d13-4319-b692-6ba1d2d4af43", "productId": "27baedc4-574e-41f2-bd28-94c0d87c325e", "amount": 25.5, "createdAt": "2026-11-02T07:50:31.723257Z", "productTitle": "Week07 Nacos textbook", "status": "PENDING_PAYMENT"}, {"id": "97157b70-8869-4bc8-ae15-01670461390b", "buyerId": "784efa4c-159a-4f38-99f0-cecb591fe426", "productId": "b61983f2-2648-433e-b4eb-81c4724793a0", "amount": 25.5, "createdAt": "2026-11-02T07:52:05.126443Z", "productTitle": "Week07 Nacos textbook", "status": "PENDING_PAYMENT"}, {"id": "bbe136d8-34fb-4fe7-be53-21ac99c5425f", "buyerId": "bb41a2f4-8d13-4319-b692-6ba1d2d4af43", "productId": "a3d08a0b-193a-43b3-8195-8b850a41990f", "amount": 12.0, "createdAt": "2026-11-02T07:51:13.694775Z", "productTitle": "Week07 failure guard", "status": "PENDING_PAYMENT"}]
+GET http://localhost:8102/api/products/87f78b55-1180-47d9-9885-af96e50a342a -> HTTP 200
+{"id": "87f78b55-1180-47d9-9885-af96e50a342a", "title": "Week07 failure guard", "description": "Must remain available", "price": 12.0, "status": "AVAILABLE"}
+ Container cyy-trade-week07-user-mysql-1 Waiting 
+ Container cyy-trade-week07-nacos-1 Waiting 
+ Container cyy-trade-week07-user-mysql-1 Healthy 
+ Container cyy-trade-week07-nacos-1 Healthy 
+ Container cyy-trade-week07-user-service-1 Starting 
+ Container cyy-trade-week07-user-service-1 Started 
+POST http://localhost:8103/api/orders -> HTTP 201
+{"id": "31ee20b9-d11e-4246-b2db-078948af5db7", "buyerId": "784efa4c-159a-4f38-99f0-cecb591fe426", "productId": "87f78b55-1180-47d9-9885-af96e50a342a", "amount": 12.0, "createdAt": "2026-11-02T07:52:46.953614413Z", "productTitle": "Week07 failure guard", "status": "PENDING_PAYMENT"}
+GET http://localhost:8102/api/products/87f78b55-1180-47d9-9885-af96e50a342a -> HTTP 200
+{"id": "87f78b55-1180-47d9-9885-af96e50a342a", "title": "Week07 failure guard", "description": "Must remain available", "price": 12.0, "status": "RESERVED"}
+GET http://localhost:8103/api/orders -> HTTP 200
+[{"id": "31ee20b9-d11e-4246-b2db-078948af5db7", "buyerId": "784efa4c-159a-4f38-99f0-cecb591fe426", "productId": "87f78b55-1180-47d9-9885-af96e50a342a", "amount": 12.0, "createdAt": "2026-11-02T07:52:46.953614Z", "productTitle": "Week07 failure guard", "status": "PENDING_PAYMENT"}, {"id": "81b38281-d9c7-4277-b24a-2db668fc0f1f", "buyerId": "bb41a2f4-8d13-4319-b692-6ba1d2d4af43", "productId": "27baedc4-574e-41f2-bd28-94c0d87c325e", "amount": 25.5, "createdAt": "2026-11-02T07:50:31.723257Z", "productTitle": "Week07 Nacos textbook", "status": "PENDING_PAYMENT"}, {"id": "97157b70-8869-4bc8-ae15-01670461390b", "buyerId": "784efa4c-159a-4f38-99f0-cecb591fe426", "productId": "b61983f2-2648-433e-b4eb-81c4724793a0", "amount": 25.5, "createdAt": "2026-11-02T07:52:05.126443Z", "productTitle": "Week07 Nacos textbook", "status": "PENDING_PAYMENT"}, {"id": "bbe136d8-34fb-4fe7-be53-21ac99c5425f", "buyerId": "bb41a2f4-8d13-4319-b692-6ba1d2d4af43", "productId": "a3d08a0b-193a-43b3-8195-8b850a41990f", "amount": 12.0, "createdAt": "2026-11-02T07:51:13.694775Z", "productTitle": "Week07 failure guard", "status": "PENDING_PAYMENT"}]
+PASS: real HTTP workflow and failure guards; evidence: D:\codexwork\week07-work\docs\homework\week-07\verification.json
+PASS: Nacos console, three health endpoints, order flow, outage and recovery

@@ -6,7 +6,7 @@
 
 本项目面向校内学生，提供闲置商品发布、下单、校内面交和模拟担保结算功能，帮助买卖双方记录交易过程，并通过明确的订单状态和简单纠纷处理协调交付与结算。本学期持续使用本仓库，先实现模块化单体，再按课程要求逐步增加认证、消息、服务拆分、监控和部署能力。
 
-**当前阶段：第六周微服务拆分。用户、商品、订单三个独立服务通过 HTTP 协作；单体版本保留在 monolith。支付、登录、面交和纠纷仍为后续设计目标。**
+**当前阶段：第七周 Nacos 服务注册与发现。三个独立服务注册到 Nacos，order-service 通过 DiscoveryClient 获取用户和商品实例地址；单体版本保留在 monolith。支付、登录、面交和纠纷仍为后续设计目标。**
 ## 业务背景与目标用户
 
 学生在毕业、搬宿舍或更换学习用品时，经常需要转让教材、数码配件及生活用品。通过群聊交流时，商品是否已经售出、双方是否约定交付、交易是否结束等信息容易分散，出现争议时也缺少统一记录。本项目以单一校园内的二手交易为场景，用商品状态、订单记录和模拟担保结算串联交易，探索如何让交易过程可查询、可追踪、可恢复。
@@ -354,3 +354,96 @@ docker compose start
 ```
 
 数据由三个命名卷保留。不要执行删除数据卷的 down -v。当前不实现登录、支付或分布式事务；已占用商品但订单写入失败的窗口及边界见设计文档。第六周实际结果和截图清单见 [本周记录](docs/homework/week-06/index.md)。
+
+## 第七周：Nacos 服务注册与发现
+
+在根目录 compose.yaml 中加入 `nacos/nacos-server:v3.2.4`，三个服务注册到同一 Nacos 的 `public` 命名空间、`PERSONAL_GROUP` 分组。order-service 删除固定地址，改为每次下单通过 `DiscoveryClient.getInstances(...)` 获取实例 URI，再发起真实 HTTP 请求。
+
+### 启动 Nacos 与初始化
+
+首次准备 `.env`（已有 `.env` 时不要覆盖）：
+
+```bash
+test -f .env || cp .env.example .env
+```
+
+在 `.env` 中填写四个数据库密码、三个数据库 root 密码，以及：
+
+```text
+NACOS_PASSWORD=本机 Nacos 管理员密码
+NACOS_AUTH_TOKEN=openssl rand -base64 32 的输出
+NACOS_AUTH_IDENTITY_KEY=本机自定义标识
+NACOS_AUTH_IDENTITY_VALUE=本机自定义值
+```
+
+真实值只保存在被忽略的 `.env`，`.env.example` 只有占位符。需要本机 JDK 25 与 Maven；服务镜像使用本地构建好的 JAR，不依赖 Docker Hub 的 Maven 构建镜像。一键启动：
+
+```bash
+bash scripts/start-week07.sh
+docker compose ps
+```
+
+脚本会先启动 Nacos、初始化管理员，再分别构建三个服务 JAR，最后构建镜像并启动。也可以手动执行：
+
+```bash
+docker compose up -d nacos
+python scripts/nacos-admin.py init
+for service in user-service product-service order-service; do
+  (cd "services/$service" && mvn -B -ntp -DskipTests package)
+done
+docker compose up -d --build
+docker compose ps
+```
+
+Nacos 控制台：<http://localhost:18080>，用户名 `nacos`，密码为本地 `.env` 中的 `NACOS_PASSWORD`。服务端 8848、SDK gRPC 9848 只绑定 127.0.0.1。控制台地址、服务端端口和 SDK 端口不要混用；8848 不是控制台。
+
+### 服务发现与业务请求
+
+Nacos 控制台选择命名空间“公共”（public）和分组 `PERSONAL_GROUP`，应看到：
+
+- `user-service`
+- `product-service`
+- `order-service`
+
+业务请求仍使用原接口：
+
+```bash
+curl -i http://localhost:8101/actuator/health
+curl -i http://localhost:8102/actuator/health
+curl -i http://localhost:8103/actuator/health
+curl -i -X POST http://localhost:8101/api/users -H 'Content-Type: application/json' -d '{"name":"Week07 Alice"}'
+curl -i -X POST http://localhost:8102/api/products -H 'Content-Type: application/json' -d '{"title":"Week07 textbook","description":"Nacos discovery demo","price":25.50}'
+# 替换为上面返回的真实 UUID
+curl -i -X POST http://localhost:8103/api/orders -H 'Content-Type: application/json' -d '{"buyerId":"USER_ID","productId":"PRODUCT_ID"}'
+curl -i http://localhost:8103/api/orders/ORDER_ID
+```
+
+下单 201，订单金额取商品服务返回值；同一商品重复下单 409；用户或商品不存在 404。order-service 日志会显示实际发现地址：
+
+```bash
+docker compose logs --tail=60 order-service | grep 'Nacos discovery'
+```
+
+### 下线、失败与恢复
+
+```bash
+docker compose stop user-service
+# 使用新商品再下单，应返回 503，订单数不增加，商品仍 AVAILABLE
+docker compose start user-service
+# 等待健康接口恢复并重新注册后，再下单应返回 201
+bash scripts/smoke-test.sh
+```
+
+`scripts/smoke-test.sh` 从仓库根目录执行，检查 Nacos 控制台 18080、三个健康接口、正常下单、重复 409、404、停止 user-service 的 503 和恢复后的 201；任一检查失败返回非零退出码。业务证据写入 `docs/homework/week-07/verification.json`。
+
+### 测试边界
+
+各服务测试使用 H2，关闭 Nacos 自动注册，不连接真实 Nacos 或 MySQL。order-service 用模拟 DiscoveryClient 指向本地 HTTP 测试服务，覆盖成功、空实例 503、实例列表变化后重新寻址、404、409、连接失败和读取超时，并断言失败时订单数不变。进入对应服务目录运行：
+
+```bash
+(cd services/user-service && mvn test)
+(cd services/product-service && mvn test)
+(cd services/order-service && mvn test)
+```
+
+Windows Git Bash 若使用仓库内 Maven Wrapper，可把 `mvn` 换成 `./mvnw.cmd`。Nacos SDK 连接存活、Nacos 实例 healthy 与 Actuator 健康不是同一件事；Actuator DOWN 不会自动从 Nacos 摘除实例。服务发现也不消除跨服务写操作的部分成功窗口，详见设计文档。本周结果与截图清单见 [第七周记录](docs/homework/week-07/index.md)。
