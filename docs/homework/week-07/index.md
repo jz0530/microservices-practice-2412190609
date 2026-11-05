@@ -62,7 +62,7 @@ order-service: 172.27.0.6:8080 healthy=True enabled=True
 
 ## 3. 服务发现与业务调用
 
-`TradeClient` 注入 `DiscoveryClient`，每次下单时重新查询实例：
+`TradeClient` 注入 `DiscoveryClient`，每次下单时获取 DiscoveryClient 当前已知的实例列表（SDK 可能缓存注册信息）：
 
 ```java
 var instances = discovery.getInstances(serviceName);
@@ -99,7 +99,7 @@ Nacos discovery: product-service -> http://172.27.0.8:8080
 | 不存在的买家 | 404 | 不写订单，商品仍 AVAILABLE |
 | 不存在的商品 | 404 | 不写订单 |
 
-本次验证 ID：买家 `784efa4c-159a-4f38-99f0-cecb591fe426`，商品 `b61983f2-2648-433e-b4eb-81c4724793a0`，订单 `97157b70-8869-4bc8-ae15-01670461390b`。
+最近一次验证时间：2026-11-05T08:42:35+0800。买家 `4dbd9882-6486-4fdd-a52f-20d363d6bc55`，商品 `5c6ce416-0fbd-4cce-be64-aaf3d1b80de7`，订单 `21803289-5513-41ef-a150-651211da6b54`。下文 11 月 3 日复核记录为历史验证，11 月 5 日截图对应第 10 节。
 
 ## 4. 正常、下线与恢复验证
 
@@ -174,17 +174,54 @@ recovery: HTTP 201 after user-service re-registered (attempt 1); order written a
 
 ## 8. 截图清单
 
-截图由用户自行完成，放在 `docs/homework/week-07/screenshots/`。
+以下 13 张用户实拍截图已逐项核对。
 
-| 文件名 | 内容 |
+| 文件 | 内容 |
 | --- | --- |
-| 01-compose-ps.png | `docker compose ps`，Nacos、三个应用、三个 MySQL 状态 |
-| 02-nacos-register.png | Nacos 控制台 `public` / `PERSONAL_GROUP` 下三个服务及实例 IP:端口 |
-| 03-discovery-code.png | `TradeClient` 中 `getInstances` 与使用实例 URI 的 HTTP 调用 |
-| 04-order-success.png | 下单 201、商品 RESERVED、订单金额来自商品服务 |
-| 05-health.png | 三个 `/actuator/health` 返回 200/UP |
-| 06-outage-503.png | 停止 user-service 后下单 503，订单数不增加 |
-| 07-recovery-201.png | 恢复 user-service 后重新下单 201 |
-| 08-smoke-test.png | `bash scripts/smoke-test.sh` 全流程 PASS |
+| [01-compose-ps.png](screenshots/01-compose-ps.png) | Nacos、三个应用、三个 MySQL 容器运行 |
+| [02-nacos-register.png](screenshots/02-nacos-register.png) | PERSONAL_GROUP 三个服务及健康实例数 |
+| [02a-user-instance.png](screenshots/02a-user-instance.png) | user-service 实例地址及健康状态 |
+| [02b-product-instance.png](screenshots/02b-product-instance.png) | product-service 实例地址及健康状态 |
+| [02c-order-instance.png](screenshots/02c-order-instance.png) | order-service 实例地址及健康状态 |
+| [03-discovery-code.png](screenshots/03-discovery-code.png) | DiscoveryClient 获取实例、空列表处理及 HTTP 调用 |
+| [03-smoke-test.png](screenshots/03-smoke-test.png) | 完整脚本 PASS |
+| [tests.png](screenshots/tests.png) | 11 月 5 日订单服务 12 项测试通过，Failures=0、Errors=0、BUILD SUCCESS |
+| [discovery-address.png](screenshots/discovery-address.png) | 实际发现的用户与商品服务地址 |
+| [health.png](screenshots/health.png) | 三个健康接口 HTTP 200 / UP |
+| [order-success.png](screenshots/order-success.png) | 正常下单 201，商品 RESERVED |
+| [outage-503.png](screenshots/outage-503.png) | 服务停止、Nacos 空实例及下单 503 |
+| [recovery-success.png](screenshots/recovery-success.png) | 恢复后下单 201，商品 RESERVED |
 
-作业系统填写文字见 [submission.md](submission.md)。
+提交对应：第 1 题使用容器、注册列表和三个实例详情（5 张）；第 2 题使用代码、发现地址和正常下单（3 张）；第 3 题使用健康、下线失败和恢复成功（3 张）；第 4 题使用 03-smoke-test.png 与 tests.png。
+
+## 9. 2026-11-03 复核记录
+
+本次从仓库根目录运行 `bash scripts/smoke-test.sh`，退出码 0。验证脚本新增注册列表检查，等待服务下线及恢复的状态收敛，只记录实例地址与状态，不记录凭据。
+
+| 阶段 | 服务 | Nacos 实例 |
+| --- | --- | --- |
+| before | user-service | 172.27.0.7:8080 (healthy=True, enabled=True) |
+| before | product-service | 172.27.0.8:8080 (healthy=True, enabled=True) |
+| before | order-service | 172.27.0.6:8080 (healthy=True, enabled=True) |
+| stopped | user-service | 无实例 |
+| recovered | user-service | 172.27.0.7:8080 (healthy=True, enabled=True) |
+
+订单数：开始 6，正常下单后 7，依赖失败后保持 7，恢复下单后 8。失败商品 ID 为 `5724e042-1fda-4234-a243-0cf9ff37af06`，失败时 AVAILABLE，恢复下单后 RESERVED。
+
+负向检查：将 `NACOS_CONSOLE_URL` 临时设为 `http://127.0.0.1:1`，脚本报告不可访问并以 1 退出；该临时变量没有写入项目配置。
+
+11 月 3 日复核时尚未归档截图；目前已归档，见第 8 节。
+
+## 10. 2026-11-05 截图对应的最终验证
+
+验证时间 `2026-11-05T08:42:35+0800`，分组 PERSONAL_GROUP，命名空间 public。正常订单 `21803289-5513-41ef-a150-651211da6b54`，商品 `5c6ce416-0fbd-4cce-be64-aaf3d1b80de7`，金额 25.50；失败及恢复测试使用另一商品 `436c5176-2dda-4ed0-8e1b-d325fbcfb6e7`，金额 12.00。两条流程不要混淆。
+
+订单数：开始 8，首次成功后 9，下线失败后仍为 9，恢复成功后 10。原始请求、响应及各阶段注册列表见 [verification.json](verification.json)。
+
+- before / user-service：172.27.0.6:8080。
+- before / product-service：172.27.0.7:8080。
+- before / order-service：172.27.0.8:8080。
+- stopped / user-service：无实例。
+- recovered / user-service：172.27.0.6:8080。
+
+11 月 3 日保存的完整终端输出为历史记录（smoke-test-output.txt）；11 月 5 日脚本结果以 verification.json 和 03-smoke-test.png 为准。服务重启后容器 IP 变化属于正常现象。

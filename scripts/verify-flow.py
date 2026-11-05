@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Week 07 real HTTP workflow. --dependency-failure briefly stops user-service and restores it."""
-import argparse, json, os, subprocess, time, uuid
+import argparse, json, os, runpy, subprocess, time, uuid
 from pathlib import Path
 from urllib.request import Request, urlopen
 from urllib.error import HTTPError, URLError
@@ -13,6 +13,26 @@ args = parser.parse_args()
 urls = {name: os.environ.get(name.upper()+'_SERVICE_URL', 'http://localhost:'+str(port)).rstrip('/')
         for name, port in [('user',8101),('product',8102),('order',8103)]}
 events = []
+registry_events = []
+nacos = runpy.run_path(str(root / 'scripts/nacos-admin.py'))
+
+
+def registry(stage, service, available):
+    token = nacos['login']()
+    for _ in range(60):
+        rows = nacos['instances'](token, service)
+        active = [r for r in rows if r['healthy'] and r['enabled']]
+        if bool(active) == available:
+            snapshot = {'stage': stage, 'service': service,
+                        'group': 'PERSONAL_GROUP', 'namespace': 'public',
+                        'instances': [{k: r[k] for k in ('ip', 'port', 'healthy', 'enabled')}
+                                      for r in rows]}
+            registry_events.append(snapshot)
+            print('NACOS ' + json.dumps(snapshot), flush=True)
+            return
+        time.sleep(1)
+    raise RuntimeError('Nacos instance state did not converge: ' + service)
+
 
 def request(service, path, body=None, expected=200):
     method = 'POST' if body is not None else 'GET'
@@ -54,6 +74,7 @@ def compose(*cmd):
     subprocess.run(['docker','compose',*cmd],cwd=root,check=True)
 
 for service in urls:
+    registry('before', service + '-service', True)
     wait(service)
     assert request(service,'/actuator/health')['status']=='UP'
 user = request('user','/api/users',{'name':'Week07 Nacos Buyer'},201)
@@ -79,6 +100,7 @@ recovery = 'not requested'
 if args.dependency_failure:
     try:
         compose('stop','user-service')
+        registry('stopped', 'user-service', False)
         request('order','/api/orders',{'buyerId':user['id'],'productId':fresh['id']},503)
         assert len(request('order','/api/orders'))==len(orders_success)
         assert request('product','/api/products/'+fresh['id'])['status']=='AVAILABLE'
@@ -86,6 +108,7 @@ if args.dependency_failure:
     finally:
         compose('start','user-service')
         wait('user')
+    registry('recovered', 'user-service', True)
     for attempt in range(20):
         try:
             recovered = request('order','/api/orders',{'buyerId':user['id'],'productId':fresh['id']},201)
@@ -102,7 +125,9 @@ result = {'verifiedAt':time.strftime('%Y-%m-%dT%H:%M:%S%z'),'nacosGroup':'PERSON
           'userId':user['id'],'productId':product['id'],'orderId':order['id'],
           'failureProductId':fresh['id'],'ordersBefore':len(orders_before),
           'ordersAfter':len(orders_success),'dependencyFailure':failure,
-          'recovery':recovery,'events':events,'passed':True}
+          'recovery':recovery,'registryEvents':registry_events,
+          'ordersAfterRecovery':len(request('order','/api/orders')),
+          'events':events,'passed':True}
 output = Path(args.output)
 if not output.is_absolute():output=root/output
 output.parent.mkdir(parents=True,exist_ok=True)
