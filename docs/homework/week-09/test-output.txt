@@ -1,0 +1,8 @@
+﻿Week 09 test summary
+
+user-service    : Tests run 7, Failures 0, Errors 0, Skipped 0
+order-service   : Tests run 15, Failures 0, Errors 0, Skipped 0
+product-service : Tests run 5, Failures 0, Errors 0, Skipped 0
+Total           : 27 tests, 0 failures, 0 errors
+
+Gateway integration: scripts/auth-test.sh exited 0; see auth-output.txt.

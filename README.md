@@ -1,3 +1,21 @@
+# 当前版本：第九周 API 网关与 JWT
+
+统一业务入口：`http://localhost:8080`；健康：`/actuator/health`。
+
+首次配置 `.env` 后，在仓库根目录运行 `bash scripts/start-week09.sh`，验证运行 `bash scripts/auth-test.sh`。Java 25、Maven、Docker Compose、Python 3、Bash 为前置依赖。详见 [第九周记录](docs/homework/week-09/index.md) 和 [安全设计](docs/security.md)。
+
+|测试账号|角色|密码来源（不公开实际值）|
+|---|---|---|
+|buyer|BUYER|本地 .env 的 BUYER_PASSWORD|
+|buyer2|BUYER|本地 .env 的 BUYER2_PASSWORD|
+|admin|ADMIN|本地 .env 的 ADMIN_PASSWORD|
+
+`python scripts/init-week09-env.py` 生成缺失的随机密码与 JWT 密钥，不覆盖既有值。账户初始化后不会因修改环境变量自动更改数据库密码。两个用户实例共享同一用户库。
+
+本周下游端口默认关闭，以下历史周次的直连端口与旧启动/测试命令不再适用于当前安全部署；重现历史请使用相应 Git 提交，勿为旧脚本开放下游。
+
+---
+
 # 校园二手交易与担保履约平台
 
 > 《微服务开发与实践》课程项目 · 程悠洋 · 2412190609
@@ -238,7 +256,7 @@ curl -i -X POST 'http://localhost:8080/api/orders' -H 'Content-Type: application
 
 测试代码会创建商品与订单数据，使用 H2 和测试事务回滚，可重复执行；不会连接本地 MySQL。MySQL 演示数据通过上面的 POST 请求创建，新建商品 ID 每次不同。
 
-目前没有用户认证，buyerName 仅为演示输入；商品与订单不支持取消、删除、退款、重新销售或真实支付。本周每件商品至多一笔订单，数据库有唯一约束，下单通过事务和商品行锁保护。数据库设计见 [docs/database.md](docs/database.md)。
+第 4 周阶段的单体接口没有用户认证，下面的 `buyerName` 示例仅用于历史对照；当前 Week09 已加入 JWT 登录和角色校验，统一入口为 `http://localhost:8080`，详见 [安全设计](docs/security.md)。商品与订单不支持取消、删除、退款、重新销售或真实支付。每件商品至多一笔订单，数据库有唯一约束，下单通过事务和商品行锁保护。数据库设计见 [docs/database.md](docs/database.md)。
 
 
 ## 第五周：Docker 容器化运行

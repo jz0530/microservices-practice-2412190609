@@ -15,7 +15,10 @@ import org.springframework.stereotype.Service;
 @Service
 public class ProductService {
     private final ProductRepository products;
-    public ProductService(ProductRepository products) { this.products=products; }
+
+    public ProductService(ProductRepository products) {
+        this.products = products;
+    }
 
     @Transactional
     public Product publish(String title, String description, BigDecimal price) {
@@ -41,21 +44,29 @@ public class ProductService {
         return product;
     }
 
-    @Transactional
+    @Transactional /* 表示这个方法在一个本地数据库事务里执行。正常完成就提交，遇到这里的运行时异常就回滚。它只管商品服务自己的数据库，不能一起回滚订单数据库。 */
     public Product reserve(String id) {
-        var product=products.findForUpdate(id).orElseThrow(() -> new NoSuchElementException("Product not found"));
+        var product = products.findForUpdate(id).orElseThrow(() -> new NoSuchElementException("Product not found"));
+        /* 查询并锁住这件商品；找不到就抛异常。 */
         if (!"AVAILABLE".equals(product.status())) {
-            throw new com.zjgsu.cyy.exception.ApiFailure(org.springframework.http.HttpStatus.CONFLICT,"Product already reserved");
+            throw new com.zjgsu.cyy.exception.ApiFailure(org.springframework.http.HttpStatus.CONFLICT,
+                    "Product already reserved");
         }
         product.reserve();
         return products.saveAndFlush(product);
+        /*
+         * 先把商品对象改成 RESERVED，再执行数据库保存。
+         * 锁通常等到事务提交或回滚才释放，不是在查询结束后立即释放。
+         */
+
     }
 
-    @Transactional(readOnly=true)
+    @Transactional(readOnly = true)
     public List<Product> list() {
         return products.findAll().stream().sorted(Comparator.comparing(Product::id)).toList();
     }
-    @Transactional(readOnly=true)
+
+    @Transactional(readOnly = true)
     public Product find(String id) {
         return products.findById(id).orElseThrow(() -> new NoSuchElementException("商品不存在"));
     }
