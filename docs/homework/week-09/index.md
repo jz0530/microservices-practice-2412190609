@@ -40,3 +40,16 @@ bash scripts/auth-test.sh
 - `05-tests-ports.png`：测试汇总与端口隔离。
 
 截图为原文件/日志节选展示，标注来源，不包含真实密码或完整 Token。
+
+## 最终复核结果
+
+- 从仓库根目录实际执行 `bash scripts/auth-test.sh`，退出码 0。
+- 未登录、无效/过期 Token 返回 401；登录及授权读取返回 200。
+- BUYER 创建商品返回 403；ADMIN 创建商品返回 201。
+- 伪造身份头、冒用其他买家下单、读取他人订单均被拒绝。
+- 拒绝写入后无新增订单，商品仍为 AVAILABLE；正常下单返回 201，订单 PENDING_PAYMENT，商品 RESERVED。
+- 核对 Maven Surefire XML：user-service 7、product-service 5、order-service 15，共 27 项，失败及错误均为 0。网关通过真实 HTTP 脚本验证，不将其计作单元测试数量。
+- 本次 `docker compose ps` 确认 9 个容器运行，下游无宿主机映射。
+- 五张证据图已逐张检查，按真实源码和本次日志节选生成；修正旧图中 seats/USER 的表述和中文字体显示。
+
+尚未实现的生产级功能及信任边界见 `docs/security.md`，不把课堂演示认证声称为完整生产安全系统。

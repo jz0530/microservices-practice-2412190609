@@ -1,8 +1,9 @@
-﻿Week 09 test summary
-
-user-service    : Tests run 7, Failures 0, Errors 0, Skipped 0
-order-service   : Tests run 15, Failures 0, Errors 0, Skipped 0
-product-service : Tests run 5, Failures 0, Errors 0, Skipped 0
-Total           : 27 tests, 0 failures, 0 errors
-
-Gateway integration: scripts/auth-test.sh exited 0; see auth-output.txt.
+Actual Maven Surefire XML report summary
+FeignClientTests: Tests=6, Failures=0, Errors=0
+OrderAuthorizationTests: Tests=3, Failures=0, Errors=0
+OrderServiceTests: Tests=6, Failures=0, Errors=0
+ProductApiTests: Tests=5, Failures=0, Errors=0
+AuthTests: Tests=3, Failures=0, Errors=0
+UserApiTests: Tests=4, Failures=0, Errors=0
+TOTAL: 27 tests; 0 failures; 0 errors
+Gateway HTTP verification: bash scripts/auth-test.sh exited 0

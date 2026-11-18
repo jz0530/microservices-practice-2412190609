@@ -27,11 +27,11 @@ GET /api/products -> HTTP 401
 PASS  forged headers without Token denied
 POST /api/products -> HTTP 201
 PASS  ADMIN creates product
-POST /api/products/3e79c9f9-1aa1-4458-9085-b77ba26636c8/reservations -> HTTP 403
+POST /api/products/e6c58d78-50a6-47d6-a803-c810d87c8b92/reservations -> HTTP 403
 PASS  BUYER cannot call internal reservation
-POST /api/products/3e79c9f9-1aa1-4458-9085-b77ba26636c8/reservations -> HTTP 403
+POST /api/products/e6c58d78-50a6-47d6-a803-c810d87c8b92/reservations -> HTTP 403
 PASS  ADMIN cannot call internal reservation
-GET /api/products/3e79c9f9-1aa1-4458-9085-b77ba26636c8 -> HTTP 200
+GET /api/products/e6c58d78-50a6-47d6-a803-c810d87c8b92 -> HTTP 200
 PASS  read product before order
 GET /api/orders -> HTTP 200
 PASS  admin order list before denied write
@@ -39,17 +39,17 @@ POST /api/orders -> HTTP 403
 PASS  cannot order as another buyer even with forged headers
 GET /api/orders -> HTTP 200
 PASS  admin order list after denied write
-GET /api/products/3e79c9f9-1aa1-4458-9085-b77ba26636c8 -> HTTP 200
+GET /api/products/e6c58d78-50a6-47d6-a803-c810d87c8b92 -> HTTP 200
 PASS  read product after denied write
 PASS  denied write: no new order; product AVAILABLE
 POST /api/orders -> HTTP 201
 PASS  BUYER creates own order through gateway + Feign
-GET /api/products/3e79c9f9-1aa1-4458-9085-b77ba26636c8 -> HTTP 200
+GET /api/products/e6c58d78-50a6-47d6-a803-c810d87c8b92 -> HTTP 200
 PASS  read reserved product
 PASS  normal order: PENDING_PAYMENT; product RESERVED
-GET /api/orders/c101db1c-c96a-4061-a901-c00e88870c4e -> HTTP 200
+GET /api/orders/777b6a4c-9eb9-4c8e-8ccb-a836b1ca1552 -> HTTP 200
 PASS  owner reads own order
-GET /api/orders/c101db1c-c96a-4061-a901-c00e88870c4e -> HTTP 403
+GET /api/orders/777b6a4c-9eb9-4c8e-8ccb-a836b1ca1552 -> HTTP 403
 PASS  other buyer cannot read order using forged identity
 GET /api/orders -> HTTP 200
 PASS  other buyer sees only own order list

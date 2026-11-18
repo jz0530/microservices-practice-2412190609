@@ -1,10 +1,10 @@
-﻿NAME                                 IMAGE                         STATUS                    PORTS
-cyy-trade-week07-gateway-service-1   campus-trade-gateway:week09   Up 24 minutes             127.0.0.1:8080->8080/tcp
-cyy-trade-week07-nacos-1             nacos/nacos-server:v3.2.4     Up 31 minutes (healthy)   127.0.0.1:8848->8848/tcp, 127.0.0.1:9848->9848/tcp, 127.0.0.1:18080->8080/tcp
-cyy-trade-week07-order-mysql-1       mysql:8.4.11                  Up 31 minutes (healthy)   3306/tcp, 33060/tcp
-cyy-trade-week07-order-service-1     campus-trade-order:week09     Up 24 minutes             8080/tcp
-cyy-trade-week07-product-mysql-1     mysql:8.4.11                  Up 31 minutes (healthy)   3306/tcp, 33060/tcp
-cyy-trade-week07-product-service-1   campus-trade-product:week09   Up 24 minutes             8080/tcp
-cyy-trade-week07-user-mysql-1        mysql:8.4.11                  Up 31 minutes (healthy)   3306/tcp, 33060/tcp
-cyy-trade-week07-user-service-1      campus-trade-user:week09      Up 24 minutes             8080/tcp
-cyy-trade-week07-user-service-2-1    campus-trade-user:week09      Up 16 seconds             8080/tcp
+SERVICE           STATE     PORTS
+gateway-service   running   127.0.0.1:8080->8080/tcp
+nacos             running   127.0.0.1:8848->8848/tcp, 127.0.0.1:9848->9848/tcp, 127.0.0.1:18080->8080/tcp
+order-mysql       running   3306/tcp, 33060/tcp
+order-service     running   8080/tcp
+product-mysql     running   3306/tcp, 33060/tcp
+product-service   running   8080/tcp
+user-mysql        running   3306/tcp, 33060/tcp
+user-service      running   8080/tcp
+user-service-2    running   8080/tcp
