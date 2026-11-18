@@ -6,6 +6,12 @@ spring:
     service-registry:
       auto-registration:
         enabled: false
+    openfeign:
+      client:
+        config:
+          default:
+            connectTimeout: 300
+            readTimeout: 300
   datasource:
     url: jdbc:h2:mem:order_test;DB_CLOSE_DELAY=-1
     username: sa
@@ -15,6 +21,3 @@ spring:
     hibernate:
       ddl-auto: create-drop
     open-in-view: false
-clients:
-  connect-timeout-ms: 300
-  read-timeout-ms: 300

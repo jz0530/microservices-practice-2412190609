@@ -1,0 +1,40 @@
+===== 1. 两个实例健康检查 =====
+PASS  user-service-1 健康接口 200
+PASS  user-service-2 健康接口 200
+PASS  product-service 健康接口 200
+PASS  order-service 健康接口 200
+===== 2. 正常下单，并收集买家 ID =====
+PASS  第 1 笔正常下单
+PASS  第 1 笔订单 buyerId/productId/金额/状态正确
+PASS  第 1 件商品查询
+PASS  第 1 件商品状态为 RESERVED
+PASS  第 2 笔正常下单
+PASS  第 2 笔订单 buyerId/productId/金额/状态正确
+PASS  第 2 件商品查询
+PASS  第 2 件商品状态为 RESERVED
+PASS  第 3 笔正常下单
+PASS  第 3 笔订单 buyerId/productId/金额/状态正确
+PASS  第 3 件商品查询
+PASS  第 3 件商品状态为 RESERVED
+PASS  第 4 笔正常下单
+PASS  第 4 笔订单 buyerId/productId/金额/状态正确
+PASS  第 4 件商品查询
+PASS  第 4 件商品状态为 RESERVED
+PASS  第 5 笔正常下单
+PASS  第 5 笔订单 buyerId/productId/金额/状态正确
+PASS  第 5 件商品查询
+PASS  第 5 件商品状态为 RESERVED
+PASS  第 6 笔正常下单
+PASS  第 6 笔订单 buyerId/productId/金额/状态正确
+PASS  第 6 件商品查询
+PASS  第 6 件商品状态为 RESERVED
+===== 3. 从 user-service 日志核对两个实例标识 =====
+user-service-2-1  | 2026-11-11T07:30:09.571Z  INFO 1 --- [user-service] [nio-8080-exec-3] c.zjgsu.cyy.controller.UserController    : USER_LOOKUP instance=user-service-2 buyerId=bbd4199b-c823-4e6a-88f6-097edbc99da7
+user-service-1    | 2026-11-11T07:30:12.696Z  INFO 1 --- [user-service] [nio-8080-exec-4] c.zjgsu.cyy.controller.UserController    : USER_LOOKUP instance=user-service-1 buyerId=194b10e7-190a-48da-be4c-bada547f2137
+user-service-2-1  | 2026-11-11T07:30:15.913Z  INFO 1 --- [user-service] [nio-8080-exec-8] c.zjgsu.cyy.controller.UserController    : USER_LOOKUP instance=user-service-2 buyerId=7703313f-9846-4b34-b05b-d95ced319636
+user-service-1    | 2026-11-11T07:30:19.015Z  INFO 1 --- [user-service] [nio-8080-exec-9] c.zjgsu.cyy.controller.UserController    : USER_LOOKUP instance=user-service-1 buyerId=646c8df2-1120-4099-ab5f-df87acb73ce1
+user-service-2-1  | 2026-11-11T07:30:22.191Z  INFO 1 --- [user-service] [nio-8080-exec-9] c.zjgsu.cyy.controller.UserController    : USER_LOOKUP instance=user-service-2 buyerId=e51c43ba-b6f4-48d0-8e58-046bbdfb16b5
+user-service-1    | 2026-11-11T07:30:25.424Z  INFO 1 --- [user-service] [nio-8080-exec-4] c.zjgsu.cyy.controller.UserController    : USER_LOOKUP instance=user-service-1 buyerId=64e96eb8-41e0-43ed-b3ac-d570886f6589
+PASS  同一轮下单中两个 user-service 实例都处理过买家查询
+===== 4. 两个 user-service 实例都不可用 =====
+FAIL  订单列表接口返回 HTTP 404，不能继续比较订单数

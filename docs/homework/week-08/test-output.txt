@@ -1,0 +1,10 @@
+Week 08 test summary
+
+user-service : [INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0
+product-service : [INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0
+order-service : [INFO] Tests run: 12, Failures: 0, Errors: 0, Skipped: 0
+
+Order tests: FeignClientTests 6 + OrderServiceTests 6 = 12
+User tests: 4
+Product tests: 5
+Total: 21, Failures=0, Errors=0

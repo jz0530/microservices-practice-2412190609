@@ -1,0 +1,2 @@
+EXPECTED  POST http://127.0.0.1:27441/api/orders 连接中断：本次写入结果未知，不自动重发
+PASS  POST 断连时脚本非零退出，服务端只收到 1 次 POST

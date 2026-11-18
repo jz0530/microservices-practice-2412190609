@@ -6,7 +6,7 @@
 
 本项目面向校内学生，提供闲置商品发布、下单、校内面交和模拟担保结算功能，帮助买卖双方记录交易过程，并通过明确的订单状态和简单纠纷处理协调交付与结算。本学期持续使用本仓库，先实现模块化单体，再按课程要求逐步增加认证、消息、服务拆分、监控和部署能力。
 
-**当前阶段：第七周 Nacos 服务注册与发现。三个独立服务注册到 Nacos，order-service 通过 DiscoveryClient 获取用户和商品实例地址；单体版本保留在 monolith。支付、登录、面交和纠纷仍为后续设计目标。**
+**当前阶段：第八周服务通信与负载均衡。order-service 使用 OpenFeign 按服务名调用用户和商品服务，user-service 运行两个实例并通过 Spring Cloud LoadBalancer 分发；单体版本保留在 monolith。支付、登录、面交和纠纷仍为后续设计目标。**
 ## 业务背景与目标用户
 
 学生在毕业、搬宿舍或更换学习用品时，经常需要转让教材、数码配件及生活用品。通过群聊交流时，商品是否已经售出、双方是否约定交付、交易是否结束等信息容易分散，出现争议时也缺少统一记录。本项目以单一校园内的二手交易为场景，用商品状态、订单记录和模拟担保结算串联交易，探索如何让交易过程可查询、可追踪、可恢复。
@@ -447,3 +447,44 @@ bash scripts/smoke-test.sh
 ```
 
 Windows Git Bash 若使用仓库内 Maven Wrapper，可把 `mvn` 换成 `./mvnw.cmd`。Nacos SDK 连接存活、Nacos 实例 healthy 与 Actuator 健康不是同一件事；Actuator DOWN 不会自动从 Nacos 摘除实例。服务发现也不消除跨服务写操作的部分成功窗口，详见设计文档。本周结果与截图清单见 [第七周记录](docs/homework/week-07/index.md)。
+
+## 第八周：服务通信与负载均衡
+
+order-service 已从“DiscoveryClient + RestTemplate 手写地址”改为 **OpenFeign**：`UserFeignClient` 和 `ProductFeignClient` 使用服务名 `user-service`、`product-service`，Nacos 提供实例，Spring Cloud LoadBalancer 选择实例。原 `RestTemplate` 配置和固定地址拼接已删除。
+
+- 设计文档：[docs/service-communication.md](docs/service-communication.md)
+- 第八周记录：[docs/homework/week-08/index.md](docs/homework/week-08/index.md)
+- 端到端脚本：`scripts/e2e-test.sh`
+
+### 启动
+
+```bash
+bash scripts/start-week08.sh
+```
+
+脚本会启动 Nacos、初始化管理员、构建三个 JAR、启动 Compose，并等待 8101、8111、8102、8103 健康。也可以手动：
+
+```bash
+docker compose up -d nacos
+python scripts/nacos-admin.py init
+for service in user-service product-service order-service; do
+  (cd "services/$service" && mvn -B -ntp -DskipTests package)
+done
+docker compose up -d --build
+docker compose ps
+```
+
+`user-service` 和 `user-service-2` 使用同一个镜像、同一个服务名 `user-service`、同一个 `PERSONAL_GROUP` 和同一个用户库；宿主机端口分别为 8101 和 8111。8101 是原有访问入口，8111 只用于第二个实例的健康检查或调试；订单服务使用 Nacos 返回的容器地址 8080。
+
+### 测试与端到端验证
+
+```bash
+(cd services/user-service && mvn test)
+(cd services/product-service && mvn test)
+(cd services/order-service && mvn test)
+bash scripts/e2e-test.sh
+```
+
+实际结果：三个服务共 21 项测试通过（user 4、product 5、order 12，其中 FeignClientTests 6、OrderServiceTests 6）；`e2e-test.sh` 验证 6 笔新订单、两个 user-service 实例的 `USER_LOOKUP` 日志、两个实例停止后的 503、订单数不增加、商品仍 AVAILABLE，以及恢复后的 201。详细输出见 `docs/homework/week-08/`。
+
+商品占用是远程写操作；读取超时后远端可能已经完成占用，本地报错不能证明远端回滚。项目未实现分布式事务或自动补偿，不宣称跨服务写操作原子。

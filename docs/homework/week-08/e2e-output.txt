@@ -1,0 +1,55 @@
+===== 1. 两个实例健康检查 =====
+PASS  user-service-1 健康接口 200
+PASS  user-service-2 健康接口 200
+PASS  product-service 健康接口 200
+PASS  order-service 健康接口 200
+===== 2. 正常下单，并收集买家 ID =====
+PASS  第 1 笔正常下单
+PASS  第 1 笔订单 buyerId/productId/金额/状态正确
+PASS  第 1 件商品查询
+PASS  第 1 件商品状态为 RESERVED
+PASS  第 2 笔正常下单
+PASS  第 2 笔订单 buyerId/productId/金额/状态正确
+PASS  第 2 件商品查询
+PASS  第 2 件商品状态为 RESERVED
+PASS  第 3 笔正常下单
+PASS  第 3 笔订单 buyerId/productId/金额/状态正确
+PASS  第 3 件商品查询
+PASS  第 3 件商品状态为 RESERVED
+PASS  第 4 笔正常下单
+PASS  第 4 笔订单 buyerId/productId/金额/状态正确
+PASS  第 4 件商品查询
+PASS  第 4 件商品状态为 RESERVED
+PASS  第 5 笔正常下单
+PASS  第 5 笔订单 buyerId/productId/金额/状态正确
+PASS  第 5 件商品查询
+PASS  第 5 件商品状态为 RESERVED
+PASS  第 6 笔正常下单
+PASS  第 6 笔订单 buyerId/productId/金额/状态正确
+PASS  第 6 件商品查询
+PASS  第 6 件商品状态为 RESERVED
+===== 3. 从 user-service 日志核对两个实例标识 =====
+user-service-2-1  | 2026-11-11T07:23:48.065Z  INFO 1 --- [user-service] [nio-8080-exec-5] c.zjgsu.cyy.controller.UserController    : USER_LOOKUP instance=user-service-2 buyerId=accb00ec-3522-453b-9f71-d673411c0581
+user-service-1    | 2026-11-11T07:23:51.686Z  INFO 1 --- [user-service] [nio-8080-exec-9] c.zjgsu.cyy.controller.UserController    : USER_LOOKUP instance=user-service-1 buyerId=7ced02ba-cfc0-49bb-9c5a-b17922d9f364
+user-service-2-1  | 2026-11-11T07:23:55.081Z  INFO 1 --- [user-service] [nio-8080-exec-6] c.zjgsu.cyy.controller.UserController    : USER_LOOKUP instance=user-service-2 buyerId=7f925479-1d80-4126-9ecf-1c436b7ac3d2
+user-service-1    | 2026-11-11T07:23:58.438Z  INFO 1 --- [user-service] [nio-8080-exec-4] c.zjgsu.cyy.controller.UserController    : USER_LOOKUP instance=user-service-1 buyerId=943d6306-b30f-4e0d-a235-735562afae53
+user-service-2-1  | 2026-11-11T07:24:01.977Z  INFO 1 --- [user-service] [nio-8080-exec-7] c.zjgsu.cyy.controller.UserController    : USER_LOOKUP instance=user-service-2 buyerId=085f7619-16a7-4876-8a0c-4162f36af2bb
+user-service-1    | 2026-11-11T07:24:05.764Z  INFO 1 --- [user-service] [nio-8080-exec-9] c.zjgsu.cyy.controller.UserController    : USER_LOOKUP instance=user-service-1 buyerId=1756bab2-56b5-4732-a11c-13078d4e16da
+PASS  同一轮下单中两个 user-service 实例都处理过买家查询
+===== 4. 两个 user-service 实例都不可用 =====
+PASS  已确认两个 user-service 容器都已停止
+PASS  两个 user-service 实例停止后下单返回 503
+PASS  503 响应明确说明依赖不可用
+PASS  依赖失败没有新增订单（87 -> 87）
+PASS  失败场景没有与本次买家/商品匹配的订单
+PASS  依赖失败后商品仍为 AVAILABLE
+===== 5. 恢复两个实例，只读确认就绪后只下一次单 =====
+PASS  user-service-1 健康接口 200
+PASS  user-service-2 健康接口 200
+PASS  Nacos 已重新注册两个 healthy=True enabled=True 的 user-service 实例
+PASS  只读买家查询确认 http://localhost:8101 就绪
+PASS  只读买家查询确认 http://localhost:8111 就绪
+PASS  恢复后下单返回 201
+PASS  恢复后商品为 RESERVED
+
+===== PASS：跨服务下单、双实例分发、依赖失败和恢复全部通过 =====

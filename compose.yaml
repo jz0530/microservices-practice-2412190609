@@ -42,12 +42,33 @@ services:
       start_period: 30s
 
   user-service:
-    image: campus-trade-user:week07
+    image: campus-trade-user:week08
     build: ./services/user-service
     ports:
       - "127.0.0.1:${USER_PORT:-8101}:8080"
     environment:
       SERVER_PORT: 8080
+      INSTANCE_ID: user-service-1
+      DB_URL: jdbc:mysql://user-mysql:3306/trade_user?connectionTimeZone=UTC
+      DB_USER: trade_user
+      DB_PASSWORD: ${USER_DB_PASSWORD:?Set USER_DB_PASSWORD in .env}
+      NACOS_SERVER_ADDR: nacos:8848
+      NACOS_USERNAME: nacos
+      NACOS_PASSWORD: ${NACOS_PASSWORD:?Set NACOS_PASSWORD in .env}
+    depends_on:
+      user-mysql:
+        condition: service_healthy
+      nacos:
+        condition: service_healthy
+    networks: [service-network]
+
+  user-service-2:
+    image: campus-trade-user:week08
+    ports:
+      - "127.0.0.1:${USER2_PORT:-8111}:8080"
+    environment:
+      SERVER_PORT: 8080
+      INSTANCE_ID: user-service-2
       DB_URL: jdbc:mysql://user-mysql:3306/trade_user?connectionTimeZone=UTC
       DB_USER: trade_user
       DB_PASSWORD: ${USER_DB_PASSWORD:?Set USER_DB_PASSWORD in .env}
@@ -79,7 +100,7 @@ services:
       start_period: 30s
 
   product-service:
-    image: campus-trade-product:week07
+    image: campus-trade-product:week08
     build: ./services/product-service
     ports:
       - "127.0.0.1:${PRODUCT_PORT:-8102}:8080"
@@ -116,7 +137,7 @@ services:
       start_period: 30s
 
   order-service:
-    image: campus-trade-order:week07
+    image: campus-trade-order:week08
     build: ./services/order-service
     ports:
       - "127.0.0.1:${ORDER_PORT:-8103}:8080"
